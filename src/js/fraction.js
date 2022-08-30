@@ -9,6 +9,9 @@ export default class Fraction {
     this.up = a, this.dn = b;
   }
   static from_frac(a, b) {
+    if (b === 0) {
+      throw 'Denominator cannot be zero';
+    }
     if (b < 0) {
       a = -a, b = -b;
     }
@@ -41,6 +44,24 @@ export default class Fraction {
       }
       return this.from_frac(up, dn);
     }
+  }
+  static from_str(str) {
+    let match = str.match(/^(-?\d+)\/(\d+)$/);
+    if (match) {
+      return this.from_frac(Number.parseInt(match[1]), Number.parseInt(match[2]));
+    }
+    match = str.match(/^(-?\d+)$/);
+    if (match) {
+      return new this(Number.parseInt(match[1]), 1);
+    }
+    match = str.match(/^(-?\d+\.\d+)$/);
+    if (match) {
+      return this.from_num(Number.parseFloat(match[1]));
+    }
+    throw "Unrecognized number";
+  }
+  eq(that) {
+    return this.up === that.up && this.dn === that.dn;
   }
   is_neg() {
     return this.up < 0;
