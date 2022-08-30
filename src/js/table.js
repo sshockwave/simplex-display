@@ -77,11 +77,11 @@ function InequalitySign({ rel, row_idx, onTransform }) {
         type='button'
         className='btn btn-outline-primary btn-sm me-2'
         onClick={() => onTransform(createMultiplyTransform(-1, row_idx))}>
-        <Equation src={`\\times(-1)`}></Equation>
+        <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
   </>}>
-    <Equation src={`\\${rel}`}></Equation>
+    <Equation>{`\\${rel}`}</Equation>
   </InlinePopper>;
 }
 
@@ -98,7 +98,7 @@ function InequalityRow({
       v = v.to_katex(add_sign);
       add_sign = true;
       return <td key={idx}>
-        <Equation src={`${v}${var_to_math(id_to_var[var_id])}`}></Equation>
+        <Equation>{`${v}${var_to_math(id_to_var[var_id])}`}</Equation>
       </td>;
     })}
     <td><InequalitySign
@@ -106,7 +106,7 @@ function InequalityRow({
       row_idx={row_idx}
       onTransform={onTransform}
     ></InequalitySign></td>
-    <td><Equation src={p0.to_katex()}></Equation></td>
+    <td><Equation>{p0.to_katex()}</Equation></td>
   </>;
 }
 
@@ -122,11 +122,11 @@ function TargetRow({ id_to_var, var_list, coef, p0 }) {
       name = var_to_math(name);
       v = v.to_katex(add_sign);
       add_sign = true;
-      return <td key={idx}><Equation src={`${v}${name}`}></Equation></td>;
+      return <td key={idx}><Equation>{`${v}${name}`}</Equation></td>;
     })}
     <td></td>
     <td>{p0.is_zero() ? null :
-      <Equation src={p0.to_katex(true)}></Equation>
+      <Equation>{p0.to_katex(true)}</Equation>
     }</td>
   </>
 }
@@ -158,7 +158,7 @@ export function InequalitySystem({ table, onTransform }) {
     <thead>
       <tr className='me-1'>
         <th className='pe-3'>
-          <Equation src={`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}></Equation>
+          <Equation>{`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}</Equation>
         </th>
         <TargetRow
           id_to_var={table.id_to_var}
@@ -171,7 +171,7 @@ export function InequalitySystem({ table, onTransform }) {
     <tbody>
       {table.rows.map((row, idx) => (
         <tr key={idx} className='mb-1'>
-          <th className='pe-3'>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
+          <th className='pe-3'>{idx === 0 ? <Equation>{'\\text{subject to}'}</Equation> : null}</th>
           <InequalityRow
             id_to_var={table.id_to_var}
             var_list={var_list}
@@ -184,9 +184,9 @@ export function InequalitySystem({ table, onTransform }) {
     </tbody>
     {table.var_non_std.length > 0 ? <tbody>
       <tr className='mb-3'>
-        <th className='pe-3'><Equation src='\text{and}'></Equation></th>
+        <th className='pe-3'><Equation>{'\\text{and}'}</Equation></th>
         <td colSpan={Object.keys(table.var_to_id).length + 2} className='text-start'>
-          <Equation src={single_constraints}></Equation>
+          <Equation>{single_constraints}</Equation>
         </td>
       </tr>
     </tbody> : null}

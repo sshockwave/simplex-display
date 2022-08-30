@@ -6,8 +6,8 @@ export function var_to_math(s) {
   return `{${s}}`;
 }
 
-export function Equation({ src }) {
+export function Equation({ children }) {
   return <span dangerouslySetInnerHTML={{
-    __html: katex.renderToString(src)
+    __html: katex.renderToString(children)
   }}></span>;
 }
