@@ -35,7 +35,9 @@ export class Table {
   }
 };
 
-function InequalityRow({ id_to_var, var_list, coef, rel, p0, base_id }) {
+function InequalityRow({
+  id_to_var, var_list, coef, rel, p0, base_id, row_idx, onTransform
+}) {
   let add_sign = null;
   return <>
     {var_list.map((var_id, idx) => {
@@ -75,7 +77,7 @@ function TargetRow({ id_to_var, var_list, coef, p0 }) {
   </>
 }
 
-export function InequalitySystem({ table }) {
+export function InequalitySystem({ table, onTransform }) {
   let var_list = Object.values(table.var_to_id);
   var_list.sort();
   let single_constraints = table.var_non_std.map(({ id, rel, val }, idx) => {
@@ -116,7 +118,13 @@ export function InequalitySystem({ table }) {
       {table.rows.map((row, idx) => (
         <tr key={idx} className='mb-1'>
           <th className='pe-3'>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
-          <InequalityRow id_to_var={table.id_to_var} var_list={var_list} {...row}></InequalityRow>
+          <InequalityRow
+            id_to_var={table.id_to_var}
+            var_list={var_list}
+            row_idx={idx}
+            onTransform={onTransform}
+            {...row}
+            ></InequalityRow>
         </tr>
       ))}
     </tbody>
