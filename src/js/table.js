@@ -48,7 +48,7 @@ function InequalitySign({ rel, row_idx, onTransform }) {
         onClick={() => onTransform({
           type: 'insert',
           action: 'MultiplyTransform',
-          factor: Fraction.from_num(-1),
+          up: -1, dn: 1,
           row_idx,
         })}>
         <Equation>{'\\times(-1)'}</Equation>

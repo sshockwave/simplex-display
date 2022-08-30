@@ -1,6 +1,8 @@
 import { array_splice } from "./utils.js";
+import Fraction from './fraction.js';
 
-export function MultiplyTransform({ factor, row_idx }) {
+export function MultiplyTransform({ up, dn, row_idx }) {
+  const factor = Fraction.from_frac(up, dn);
   return {
     run(table) {
       const row = table.rows[row_idx];
