@@ -38,7 +38,8 @@ export default function App() {
   for (const t of transforms) {
     try {
       cur = t(cur);
-    } catch {
+    } catch (e) {
+      console.log(e);
       continue;
     }
     filtered_trans.push(t);
@@ -67,7 +68,7 @@ export default function App() {
                 throw 'Undefined transform type';
               }
             }}
-            ></TableDisplay>
+          ></TableDisplay>
         </div>
       </div>
     ))}

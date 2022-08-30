@@ -40,36 +40,45 @@ export class Table {
   }
 };
 
-function InequalitySign({ rel, row_idx, onTransform }) {
-  function render_negator(from_rel, target_rel) {
-    return <button
-      type='button'
-      className='btn btn-outline-primary btn-sm me-2'
-      onClick={() => onTransform({
-        type: 'insert_before',
-        val(table) {
-          const row = table.rows[row_idx];
-          if (row.rel !== from_rel) {
-            throw 'Such relation is no longer valid';
-          }
-          console.assert(row.base_id === -1, 'Inequalities does not have base_id');
-          table = table.shallow_clone();
-          table.rows = array_splice(table.rows, row_idx, 1, {
-            coef: row.coef.map(x => x.neg()),
-            rel: target_rel,
-            p0: row.p0.neg(),
-            base_id: -1,
-          });
-          return table;
-        },
-      })}>
-      <Equation src={`\\${target_rel}`}></Equation>
-    </button>;
+function createMultiplyTransform(factor, row_idx) {
+  if (typeof factor === 'number') {
+    factor = Fraction.from_num(factor);
   }
+  return {
+    type: 'insert_before',
+    val(table) {
+      const row = table.rows[row_idx];
+      console.assert(row.base_id === -1, 'Inequalities does not have base_id');
+      table = table.shallow_clone();
+      let { rel } = row;
+      if (factor.neg()) {
+        if (rel === 'le') {
+          rel = 'ge';
+        } else if (rel === 'ge') {
+          rel = 'le';
+        }
+      }
+      table.rows = array_splice(table.rows, row_idx, 1, {
+        coef: row.coef.map(x => x.neg()),
+        rel,
+        p0: row.p0.neg(),
+        base_id: -1,
+      });
+      console.log(table.rows[row_idx]);
+      return table;
+    },
+  }
+}
+
+function InequalitySign({ rel, row_idx, onTransform }) {
   return <InlinePopper content={<>
     <div className='py-2 ps-2'>
-      {rel === 'le' ? render_negator('le', 'ge') : null}
-      {rel === 'ge' ? render_negator('ge', 'le') : null}
+      <button
+        type='button'
+        className='btn btn-outline-primary btn-sm me-2'
+        onClick={() => onTransform(createMultiplyTransform(-1, row_idx))}>
+        <Equation src={`\\times(-1)`}></Equation>
+      </button>
     </div>
   </>}>
     <Equation src={`\\${rel}`}></Equation>
@@ -96,8 +105,8 @@ function InequalityRow({
       rel={rel}
       row_idx={row_idx}
       onTransform={onTransform}
-      ></InequalitySign></td>
-    <td><Equation src={p0.to_katex(false)}></Equation></td>
+    ></InequalitySign></td>
+    <td><Equation src={p0.to_katex()}></Equation></td>
   </>;
 }
 
@@ -156,7 +165,7 @@ export function InequalitySystem({ table, onTransform }) {
           var_list={var_list}
           coef={table.target_coef}
           p0={table.target_p0}
-          ></TargetRow>
+        ></TargetRow>
       </tr>
     </thead>
     <tbody>
@@ -169,7 +178,7 @@ export function InequalitySystem({ table, onTransform }) {
             row_idx={idx}
             onTransform={onTransform}
             {...row}
-            ></InequalityRow>
+          ></InequalityRow>
         </tr>
       ))}
     </tbody>
