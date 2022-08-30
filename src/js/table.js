@@ -37,7 +37,7 @@ export class Table {
 };
 
 function InequalitySign({ rel, row_idx, onTransform }) {
-  return <InlinePopper el='Popup Element'>
+  return <InlinePopper content='Popup Element'>
     <Equation src={`\\${rel}`}></Equation>
   </InlinePopper>;
 }

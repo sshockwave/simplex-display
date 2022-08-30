@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react';
-import { usePopper } from 'react-popper';
+import { useState, useEffect, useRef } from 'react';
+import { createPopper } from '@popperjs/core';
 
-export function InlinePopper({ el, children }) {
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const [arrowElement, setArrowElement] = useState(null);
+export function InlinePopper({ content, children }) {
+  const main_el = useRef(null);
+  const content_el = useRef(null);
+  const arrow_el = useRef(null);
   const [showActions, setShowActions] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [
-      { name: 'arrow', options: { element: arrowElement } },
-      { name: 'eventListeners', options: { scroll: showActions, resize: showActions } },
-    ],
-  });
   useEffect(() => {
+    const popper = createPopper(main_el.current, content_el.current, {
+      placement: 'right',
+      modifiers: [
+        { name: 'arrow', options: { element: arrow_el.current } },
+        { name: 'eventListeners', options: { scroll: showActions, resize: showActions } },
+        { name: 'offset', options: { offset: [0, 8] } },
+      ],
+    });
     function handleClick(ev) {
       if (isClicked) {
         setIsClicked(false);
@@ -25,23 +27,24 @@ export function InlinePopper({ el, children }) {
       document.addEventListener('click', handleClick);
     }
     return () => {
+      popper.destroy();
       document.removeEventListener('click', handleClick);
     }
   });
   return <span onClick={() => setIsClicked(true)}>
     <span
       className='is-clickable'
-      ref={setReferenceElement}
+      ref={main_el}
       onClick={()=>setShowActions(true)}
       >{children}</span>
     <div
-      className={`popover bs-popover-auto ${showActions ? '' : 'd-none'}`}
-      ref={setPopperElement}
-      style={styles.popper}
-      {...attributes.popper}
+      className={`popover bs-popover-auto fade ${showActions ? 'show' : ''}`}
+      ref={content_el}
       >
-      <div className='popover-arrow' ref={setArrowElement} style={styles.arrow}/>
-      <div className='popover-body'>{el}</div>
+      <div className='popover-arrow' ref={arrow_el}/>
+      <div className='popover-inner'>
+        <div className='popover-body'>{content}</div>
+      </div>
     </div>
   </span>
 }
