@@ -1,7 +1,7 @@
 const eps = 1e-6;
 
 function gcd(a, b) {
-  return b != 0 ? a % b : a;
+  return b != 0 ? gcd(b, a % b) : a;
 }
 
 export default class Fraction {
@@ -43,7 +43,10 @@ export default class Fraction {
     }
   }
   is_neg() {
-    return self.up < 0;
+    return this.up < 0;
+  }
+  is_zero() {
+    return this.up === 0;
   }
   neg() {
     return this.constructor.from_frac(-this.up, this.dn);
@@ -70,16 +73,21 @@ export default class Fraction {
     }
     return new this.constructor(a, b);
   }
-  toKatex() {
-    if (this.up === 0) { // Avoid -0
-      this.up = 0;
+  to_katex(add_sign) {
+    let sign = '';
+    if (add_sign) {
+      sign = '+';
     }
+    if (this.up < 0) {
+      sign = '-';
+    }
+    if (add_sign === false) {
+      sign = '';
+    }
+    let a = Math.abs(this.up);
     if (this.dn === 1) {
-      return `{${this.up}}`;
-    } else if (this.is_neg()) {
-      return `{-\\frac{${-this.up}}{${this.dn}}}`;
-    } else {
-      return `{\\frac{${this.up}}{${this.dn}}}`;
+      return `{${sign}${a}}`;
     }
+    return `{${sign}\\frac{${a}}{${this.dn}}}`;
   }
 }
