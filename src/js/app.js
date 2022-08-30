@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 
@@ -28,5 +29,35 @@ function gen_mock_table() {
 }
 
 export default function App() {
-  return <TableDisplay table={gen_mock_table()}></TableDisplay>;
+  const [initialTable, setInitialTable] = useState(gen_mock_table);
+  const [transforms, setTransforms] = useState([]);
+  const tables = [initialTable];
+  let cur = initialTable;
+  for (const t of transforms) {
+    cur = t(cur);
+    tables.push(cur);
+  }
+  return <div className='container pt-3'>
+    {tables.map((table, idx) => (
+      <div className='card mb-3'>
+        <div className='card-body'>
+          <TableDisplay
+            key={idx}
+            table={table}
+            onTransform={(e) => {
+              if (e.type === 'insert_front') {
+                setTransforms(transforms.splice(idx - 1, 0, e.val));
+              } else if (e.type === 'insert_back') {
+                setTransforms(transforms.splice(idx, 0, e.val));
+              } else if (e.type === 'delete') {
+                setTransforms(transforms.splice(idx - 1, 1));
+              } else {
+                throw 'Undefined transform type';
+              }
+            }}
+            ></TableDisplay>
+        </div>
+      </div>
+    ))}
+  </div>;
 }
