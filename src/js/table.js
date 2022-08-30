@@ -54,77 +54,87 @@ function InequalityRow({ id_to_var, var_list, coef, rel, p0, base_id }) {
   </>;
 }
 
-export function TableDisplay({ table }) {
+function TargetRow({ id_to_var, var_list, coef, p0 }) {
+  let add_sign = null;
+  return <>
+    {var_list.map((var_id, idx) => {
+      let v = coef[var_id];
+      if (v.is_zero()) {
+        return <td key={idx}></td>;
+      }
+      let name = id_to_var[var_id];
+      name = var_to_math(name);
+      v = v.to_katex(add_sign);
+      add_sign = true;
+      return <td key={idx}><Equation src={`${v}${name}`}></Equation></td>;
+    })}
+    <td></td>
+    <td>{p0.is_zero() ? null :
+      <Equation src={p0.to_katex(true)}></Equation>
+    }</td>
+  </>
+}
+
+export function InequalitySystem({ table }) {
+  let var_list = Object.values(table.var_to_id);
+  var_list.sort();
+  let single_constraints = table.var_non_std.map(({ id, rel, val }, idx) => {
+    if (rel === 'any') {
+      return null;
+    }
+    return `${var_to_math(table.id_to_var[id])}\\${rel}${val.to_katex()}`;
+  }).join(',');
+  const std_var_list = new Set(var_list);
+  for (let t of table.var_non_std) {
+    std_var_list.delete(t.id);
+  }
+  if (std_var_list.size > 0) {
+    if (single_constraints != '') {
+      single_constraints += ',';
+    }
+    single_constraints += Array
+      .from(std_var_list)
+      .map((id) => var_to_math(table.id_to_var[id]))
+      .join(',');
+    single_constraints += '\\ge 0';
+  }
+  return <table className='simplex-table text-end'>
+    <thead>
+      <tr className='me-1'>
+        <th className='pe-3'>
+          <Equation src={`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}></Equation>
+        </th>
+        <TargetRow
+          id_to_var={table.id_to_var}
+          var_list={var_list}
+          coef={table.target_coef}
+          p0={table.target_p0}
+          ></TargetRow>
+      </tr>
+    </thead>
+    <tbody>
+      {table.rows.map((row, idx) => (
+        <tr key={idx} className='mb-1'>
+          <th className='pe-3'>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
+          <InequalityRow id_to_var={table.id_to_var} var_list={var_list} {...row}></InequalityRow>
+        </tr>
+      ))}
+    </tbody>
+    {table.var_non_std.length > 0 ? <tbody>
+      <tr className='mb-3'>
+        <th className='pe-3'><Equation src='\text{and}'></Equation></th>
+        <td colSpan={Object.keys(table.var_to_id).length + 2} className='text-start'>
+          <Equation src={single_constraints}></Equation>
+        </td>
+      </tr>
+    </tbody> : null}
+  </table>;
+}
+
+export function TableDisplay({ table, onTransform }) {
   if (table.display_table) {
     console.assert(false, 'TODO');
   } else {
-    let var_list = Object.values(table.var_to_id);
-    var_list.sort();
-    function render_coef(coef) {
-      let add_sign = null;
-      return var_list.map((var_id, idx) => {
-        let v = coef[var_id];
-        if (v.is_zero()) {
-          return <td key={idx}></td>;
-        }
-        let name = table.id_to_var[var_id];
-        name = var_to_math(name);
-        v = v.to_katex(add_sign);
-        add_sign = true;
-        return <td key={idx}><Equation src={`${v}${name}`}></Equation></td>;
-      });
-    }
-    let single_constraints = table.var_non_std.map(({ id, rel, val }, idx) => {
-      if (rel === 'any') {
-        return null;
-      }
-      return `${var_to_math(table.id_to_var[id])}\\${rel}${val.to_katex()}`;
-    }).join(',');
-    const std_var_list = new Set(var_list);
-    for (let t of table.var_non_std) {
-      std_var_list.delete(t.id);
-    }
-    if (std_var_list.size > 0) {
-      if (single_constraints != '') {
-        single_constraints += ',';
-      }
-      single_constraints += Array
-        .from(std_var_list)
-        .map((id) => var_to_math(table.id_to_var[id]))
-        .join(',');
-      single_constraints += '\\ge 0';
-    }
-    return <div>
-      <table className='simplex-table text-end'>
-        <thead>
-          <tr className='me-1'>
-            <th className='pe-3'>
-              <Equation src={`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}></Equation>
-            </th>
-            {render_coef(table.target_coef)}
-            <td></td>
-            <td>{table.target_p0.is_zero() ? null :
-              <Equation src={table.target_p0.to_katex(true)}></Equation>
-            }</td>
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.map((row, idx) => (
-            <tr key={idx} className='mb-1'>
-              <th className='pe-3'>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
-              <InequalityRow id_to_var={table.id_to_var} var_list={var_list} {...row}></InequalityRow>
-            </tr>
-          ))}
-        </tbody>
-        {table.var_non_std.length > 0 ? <tbody>
-          <tr className='mb-3'>
-            <th className='pe-3'><Equation src='\text{and}'></Equation></th>
-            <td colSpan={Object.keys(table.var_to_id).length + 2} className='text-start'>
-              <Equation src={single_constraints}></Equation>
-            </td>
-          </tr>
-        </tbody>: null}
-      </table>
-    </div>;
+    return <InequalitySystem table={table} onTransform={onTransform}></InequalitySystem>;
   }
 }
