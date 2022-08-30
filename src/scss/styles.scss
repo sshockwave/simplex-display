@@ -1,6 +1,20 @@
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
+$material-symbols-font-path: '../../node_modules/material-symbols/';
+@import '~material-symbols/rounded.scss';
 
 .is-clickable:hover {
   cursor: pointer;
+}
+
+.material-icon {
+  font-family: 'Material Symbols Rounded';
+  user-select: none;
+  vertical-align: bottom;
+  height: 1em;
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 700,
+  'GRAD' 200,
+  'opsz' 48;
 }
