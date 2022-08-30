@@ -8,6 +8,9 @@ export function InlinePopper({ content, children }) {
   const [showActions, setShowActions] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   useEffect(() => {
+    if (!showActions) {
+      return;
+    }
     const popper = createPopper(main_el.current, content_el.current, {
       modifiers: [
         { name: 'arrow', options: { element: arrow_el.current } },
@@ -15,16 +18,14 @@ export function InlinePopper({ content, children }) {
         { name: 'offset', options: { offset: [0, 8] } },
       ],
     });
-    function handleClick(ev) {
+    function handleClick() {
       if (isClicked) {
         setIsClicked(false);
       } else {
         setShowActions(false);
       }
     }
-    if (showActions) {
-      document.addEventListener('click', handleClick);
-    }
+    document.addEventListener('click', handleClick);
     return () => {
       popper.destroy();
       document.removeEventListener('click', handleClick);
@@ -36,14 +37,11 @@ export function InlinePopper({ content, children }) {
       ref={main_el}
       onClick={()=>setShowActions(true)}
       >{children}</span>
-    <div
-      className={`popover bs-popover-auto ${showActions ? '' : 'd-none'}`}
-      ref={content_el}
-      >
+    {showActions ? <div className={`popover bs-popover-auto`} ref={content_el}>
       <div className='popover-arrow' ref={arrow_el}/>
       <div className='popover-inner'>
         {content}
       </div>
-    </div>
+    </div> : null}
   </span>
 }
