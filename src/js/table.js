@@ -1,7 +1,6 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
-import { array_splice } from "./utils";
 
 export class Table {
   constructor() {
@@ -40,43 +39,18 @@ export class Table {
   }
 };
 
-function createMultiplyTransform(factor, row_idx) {
-  if (typeof factor === 'number') {
-    factor = Fraction.from_num(factor);
-  }
-  return {
-    type: 'insert_before',
-    val(table) {
-      const row = table.rows[row_idx];
-      console.assert(row.base_id === -1, 'Inequalities does not have base_id');
-      table = table.shallow_clone();
-      let { rel } = row;
-      if (factor.neg()) {
-        if (rel === 'le') {
-          rel = 'ge';
-        } else if (rel === 'ge') {
-          rel = 'le';
-        }
-      }
-      table.rows = array_splice(table.rows, row_idx, 1, {
-        coef: row.coef.map(x => x.neg()),
-        rel,
-        p0: row.p0.neg(),
-        base_id: -1,
-      });
-      console.log(table.rows[row_idx]);
-      return table;
-    },
-  }
-}
-
 function InequalitySign({ rel, row_idx, onTransform }) {
   return <InlinePopper content={<>
     <div className='py-2 ps-2'>
       <button
         type='button'
         className='btn btn-outline-primary btn-sm me-2'
-        onClick={() => onTransform(createMultiplyTransform(-1, row_idx))}>
+        onClick={() => onTransform({
+          type: 'insert',
+          action: 'MultiplyTransform',
+          factor: Fraction.from_num(-1),
+          row_idx,
+        })}>
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>

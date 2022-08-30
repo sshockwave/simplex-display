@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 import { array_splice } from './utils.js';
+import * as Transform from './transform.js';
 
 function gen_mock_table() {
   let table = new Table;
@@ -37,7 +38,8 @@ export default function App() {
   let filtered_trans = [];
   for (const t of transforms) {
     try {
-      cur = t(cur);
+      const transformer = Transform[t.action](t);
+      cur = transformer.run(cur);
     } catch (e) {
       console.log(e);
       continue;
@@ -58,11 +60,11 @@ export default function App() {
           <TableDisplay
             table={table}
             onTransform={(e) => {
-              if (e.type === 'insert_before') {
-                setTransforms(array_splice(transforms, idx - 1, 0, e.val));
-              } else if (e.type === 'insert_after') {
-                setTransforms(array_splice(transforms, idx, 0, e.val));
-              } else if (e.type === 'delete') {
+              const { type } = e;
+              delete e.type;
+              if (type === 'insert') {
+                setTransforms(array_splice(transforms, idx, 0, e));
+              } else if (type === 'delete') {
                 setTransforms(array_splice(transforms, idx - 1, 1));
               } else {
                 throw 'Undefined transform type';
