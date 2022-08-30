@@ -97,11 +97,10 @@ export function TableDisplay({ table }) {
     return <div>
       <table className='simplex-table text-end'>
         <thead>
-          <tr>
-            <th className='text'>
+          <tr className='me-1'>
+            <th className='pe-3'>
               <Equation src={`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}></Equation>
             </th>
-            <td><Equation src='Z='></Equation></td>
             {render_coef(table.target_coef)}
             <td></td>
             <td>{table.target_p0.is_zero() ? null :
@@ -111,21 +110,20 @@ export function TableDisplay({ table }) {
         </thead>
         <tbody>
           {table.rows.map((row, idx) => (
-            <tr key={idx}>
-              <th>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
-              <td></td>
+            <tr key={idx} className='mb-1'>
+              <th className='pe-3'>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
               <InequalityRow id_to_var={table.id_to_var} var_list={var_list} {...row}></InequalityRow>
             </tr>
           ))}
         </tbody>
         {table.var_non_std.length > 0 ? <tbody>
-          <tr>
-            <th><Equation src='\text{and}'></Equation></th>
+          <tr className='mb-3'>
+            <th className='pe-3'><Equation src='\text{and}'></Equation></th>
             <td colSpan={Object.keys(table.var_to_id).length + 2} className='text-start'>
               <Equation src={single_constraints}></Equation>
             </td>
           </tr>
-        </tbody> : null}
+        </tbody>: null}
       </table>
     </div>;
   }
