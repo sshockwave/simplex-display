@@ -35,6 +35,25 @@ export class Table {
   }
 };
 
+function InequalityRow({ id_to_var, var_list, coef, rel, p0, base_id }) {
+  let add_sign = null;
+  return <>
+    {var_list.map((var_id, idx) => {
+      let v = coef[var_id];
+      if (v.is_zero()) {
+        return <td key={idx}></td>;
+      }
+      v = v.to_katex(add_sign);
+      add_sign = true;
+      return <td key={idx}>
+        <Equation src={`${v}${var_to_math(id_to_var[var_id])}`}></Equation>
+      </td>;
+    })}
+    <td><Equation src={`\\${rel}`}></Equation></td>
+    <td><Equation src={p0.to_katex(false)}></Equation></td>
+  </>;
+}
+
 export function TableDisplay({ table }) {
   if (table.display_table) {
     console.assert(false, 'TODO');
@@ -42,15 +61,16 @@ export function TableDisplay({ table }) {
     let var_list = Object.values(table.var_to_id);
     var_list.sort();
     function render_coef(coef) {
-      let first = true;
-      return coef.map((v, idx) => {
+      let add_sign = null;
+      return var_list.map((var_id, idx) => {
+        let v = coef[var_id];
         if (v.is_zero()) {
           return <td key={idx}></td>;
         }
-        let name = table.id_to_var[var_list[idx]];
+        let name = table.id_to_var[var_id];
         name = var_to_math(name);
-        v = v.to_katex(!first);
-        first = false;
+        v = v.to_katex(add_sign);
+        add_sign = true;
         return <td key={idx}><Equation src={`${v}${name}`}></Equation></td>;
       });
     }
@@ -94,9 +114,7 @@ export function TableDisplay({ table }) {
             <tr key={idx}>
               <th>{idx === 0 ? <Equation src='\text{subject to}'></Equation> : null}</th>
               <td></td>
-              {render_coef(row.coef)}
-              <td><Equation src={`\\${row.rel}`}></Equation></td>
-              <td><Equation src={row.p0.to_katex(false)}></Equation></td>
+              <InequalityRow id_to_var={table.id_to_var} var_list={var_list} {...row}></InequalityRow>
             </tr>
           ))}
         </tbody>
