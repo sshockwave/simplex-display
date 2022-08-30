@@ -39,10 +39,9 @@ export default function App() {
   }
   return <div className='container pt-3'>
     {tables.map((table, idx) => (
-      <div className='card mb-3'>
+      <div className='card mb-3' key={idx}>
         <div className='card-body'>
           <TableDisplay
-            key={idx}
             table={table}
             onTransform={(e) => {
               if (e.type === 'insert_front') {
