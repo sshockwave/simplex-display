@@ -34,16 +34,18 @@ export default function App() {
   const [transforms, setTransforms] = useState([]);
   const tables = [initialTable];
   let cur = initialTable;
+  let filtered_trans = [];
   for (const t of transforms) {
     try {
       cur = t(cur);
     } catch {
-      break;
+      continue;
     }
+    filtered_trans.push(t);
     tables.push(cur);
   }
-  if (tables.length < transforms.length + 1) {
-    setTransforms(transforms.slice(tables.length - 1));
+  if (filtered_trans.length < transforms.length) {
+    setTransforms(filtered_trans);
   }
   return <div className='container pt-3'>
     {tables.map((table, idx) => (
