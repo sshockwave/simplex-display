@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
+import { array_splice } from './utils.js';
 
 function gen_mock_table() {
   let table = new Table;
@@ -15,7 +16,7 @@ function gen_mock_table() {
     },
     {
       coef: [Fraction.from_num(0), Fraction.from_num(4)],
-      rel: 'le',
+      rel: 'ge',
       p0: Fraction.from_num(3),
       base_id: -1,
     },
@@ -34,22 +35,32 @@ export default function App() {
   const tables = [initialTable];
   let cur = initialTable;
   for (const t of transforms) {
-    cur = t(cur);
+    try {
+      cur = t(cur);
+    } catch {
+      break;
+    }
     tables.push(cur);
+  }
+  if (tables.length < transforms.length + 1) {
+    setTransforms(transforms.slice(tables.length - 1));
   }
   return <div className='container pt-3'>
     {tables.map((table, idx) => (
       <div className='card mb-3' key={idx}>
-        <div className='card-body'>
+        <div className='card-header d-flex py-1'>
+          <div className='ms-auto'>Actions</div>
+        </div>
+        <div className='card-body py-2'>
           <TableDisplay
             table={table}
             onTransform={(e) => {
-              if (e.type === 'insert_front') {
-                setTransforms(transforms.splice(idx - 1, 0, e.val));
-              } else if (e.type === 'insert_back') {
-                setTransforms(transforms.splice(idx, 0, e.val));
+              if (e.type === 'insert_before') {
+                setTransforms(array_splice(transforms, idx - 1, 0, e.val));
+              } else if (e.type === 'insert_after') {
+                setTransforms(array_splice(transforms, idx, 0, e.val));
               } else if (e.type === 'delete') {
-                setTransforms(transforms.splice(idx - 1, 1));
+                setTransforms(array_splice(transforms, idx - 1, 1));
               } else {
                 throw 'Undefined transform type';
               }

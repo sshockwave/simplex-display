@@ -9,7 +9,6 @@ export function InlinePopper({ content, children }) {
   const [isClicked, setIsClicked] = useState(false);
   useEffect(() => {
     const popper = createPopper(main_el.current, content_el.current, {
-      placement: 'right',
       modifiers: [
         { name: 'arrow', options: { element: arrow_el.current } },
         { name: 'eventListeners', options: { scroll: showActions, resize: showActions } },
@@ -38,12 +37,12 @@ export function InlinePopper({ content, children }) {
       onClick={()=>setShowActions(true)}
       >{children}</span>
     <div
-      className={`popover bs-popover-auto fade ${showActions ? 'show' : ''}`}
+      className={`popover bs-popover-auto ${showActions ? '' : 'd-none'}`}
       ref={content_el}
       >
       <div className='popover-arrow' ref={arrow_el}/>
       <div className='popover-inner'>
-        <div className='popover-body'>{content}</div>
+        {content}
       </div>
     </div>
   </span>

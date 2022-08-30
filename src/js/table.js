@@ -1,6 +1,7 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
+import { array_splice } from "./utils";
 
 export class Table {
   constructor() {
@@ -23,6 +24,9 @@ export class Table {
 
     this.display_table = false;
   }
+  shallow_clone() {
+    return Object.assign(new Table, this);
+  }
   can_display_in_table() {
     if (this.var_non_std.length !== 0) {
       return false;
@@ -37,7 +41,37 @@ export class Table {
 };
 
 function InequalitySign({ rel, row_idx, onTransform }) {
-  return <InlinePopper content='Popup Element'>
+  function render_negator(from_rel, target_rel) {
+    return <button
+      type='button'
+      className='btn btn-outline-primary btn-sm me-2'
+      onClick={() => onTransform({
+        type: 'insert_before',
+        val(table) {
+          const row = table.rows[row_idx];
+          if (row.rel !== from_rel) {
+            throw 'Such relation is no longer valid';
+          }
+          console.assert(row.base_id === -1, 'Inequalities does not have base_id');
+          table = table.shallow_clone();
+          table.rows = array_splice(table.rows, row_idx, 1, {
+            coef: row.coef.map(x => x.neg()),
+            rel: target_rel,
+            p0: row.p0.neg(),
+            base_id: -1,
+          });
+          return table;
+        },
+      })}>
+      <Equation src={`\\${target_rel}`}></Equation>
+    </button>;
+  }
+  return <InlinePopper content={<>
+    <div className='py-2 ps-2'>
+      {rel === 'le' ? render_negator('le', 'ge') : null}
+      {rel === 'ge' ? render_negator('ge', 'le') : null}
+    </div>
+  </>}>
     <Equation src={`\\${rel}`}></Equation>
   </InlinePopper>;
 }
