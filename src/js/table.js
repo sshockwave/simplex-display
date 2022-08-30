@@ -1,5 +1,6 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
+import { InlinePopper } from "./popper";
 
 export class Table {
   constructor() {
@@ -35,6 +36,12 @@ export class Table {
   }
 };
 
+function InequalitySign({ rel, row_idx, onTransform }) {
+  return <InlinePopper el='Popup Element'>
+    <Equation src={`\\${rel}`}></Equation>
+  </InlinePopper>;
+}
+
 function InequalityRow({
   id_to_var, var_list, coef, rel, p0, base_id, row_idx, onTransform
 }) {
@@ -51,7 +58,11 @@ function InequalityRow({
         <Equation src={`${v}${var_to_math(id_to_var[var_id])}`}></Equation>
       </td>;
     })}
-    <td><Equation src={`\\${rel}`}></Equation></td>
+    <td><InequalitySign
+      rel={rel}
+      row_idx={row_idx}
+      onTransform={onTransform}
+      ></InequalitySign></td>
     <td><Equation src={p0.to_katex(false)}></Equation></td>
   </>;
 }
