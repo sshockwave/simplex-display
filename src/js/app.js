@@ -40,7 +40,7 @@ function ClickableIcon({ children, onClick, main, alt }) {
       setHover(false);
     }}
     onClick={onClick}
-    className={`me-1 text-${hover ? alt : main} material-icon text-decoration-none is-clickable`}
+    className={`text-${hover ? alt : main} material-icon text-decoration-none is-clickable`}
   >{children}</a>;
 }
 
@@ -57,7 +57,7 @@ function TransformBadge({ t_data, children, success, onTransform }) {
       }}
       className={`
         ${t_data.collapsed ? 'is-clickable' : ''}
-        ${success ? '' :'text-danger border-2 border-bottom border-danger'}
+        ${success ? '' :'border-2 border-bottom border-danger'}
         me-1
       `}
     >
@@ -91,9 +91,9 @@ export default function App() {
       e.collapsed = e.collapsed || false;
       t.splice(idx + 1, 0, e);
     } else if (type === 'delete') { // delete idx
-      if (idx > 0 && t[idx - 1].collapsed != t[idx].collapsed) {
+      if (idx > 0 && t[idx - 1].collapsed && !t[idx].collapsed) {
         t[idx - 1] = clone(t[idx - 1]);
-        t[idx - 1].collapsed = t[idx].collapsed;
+        t[idx - 1].collapsed = false;
       }
       t.splice(idx, 1);
     } else if (type === 'update') {
@@ -134,7 +134,7 @@ export default function App() {
         <div className='card-header'>
           <ol className='breadcrumb mb-0'>
             {stash.map(([trans, success, trans_idx, t], idx) => (
-              <li key={idx} className={`breadcrumb-item`}>
+              <li key={idx} className='breadcrumb-item'>
                 <TransformBadge
                   success={success}
                   onTransform={(e) => onTransform(e, trans_idx)}
@@ -144,6 +144,7 @@ export default function App() {
                 </TransformBadge>
               </li>
             ))}
+            <li className='breadcrumb-item'></li>
             <li className='ms-auto'>
               {trans_idx < transforms.length - 1 ? <ClickableIcon
                 onClick={() => {
