@@ -3,6 +3,7 @@ import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 import { clone } from './utils.js';
 import * as Transform from './transform.js';
+import { ErrorIcon } from './components/error_icon.js';
 
 function gen_mock_table() {
   let table = new Table;
@@ -44,7 +45,7 @@ function ClickableIcon({ children, onClick, main, alt }) {
   >{children}</a>;
 }
 
-function TransformBadge({ t_data, children, success, onTransform }) {
+function TransformBadge({ t_data, children, success, onTransform, error_info }) {
   return <span className='position-relative'>
     <span
       onClick={() => {
@@ -57,12 +58,12 @@ function TransformBadge({ t_data, children, success, onTransform }) {
       }}
       className={`
         ${t_data.collapsed ? 'is-clickable' : ''}
-        ${success ? '' :'border-2 border-bottom border-danger'}
         me-1
       `}
     >
       {children}
     </span>
+    {success ? null : <ErrorIcon>{error_info}</ErrorIcon>}
     <ClickableIcon
       onClick={() => onTransform({ type: 'delete' })}
       main='secondary'
@@ -110,11 +111,11 @@ export default function App() {
   let cur = initialTable;
   for (const [trans_idx, t] of transforms.entries()) {
     let transformer = null;
+    let error_info = null;
     try {
       transformer = Transform[t.action](t);
     } catch(e) {
-      console.error('Corrupted transform config');
-      console.log(e);
+      error_info = e;
       transformer = {
         render() {
           return 'Corrupted';
@@ -126,9 +127,11 @@ export default function App() {
       cur = transformer.run(cur);
       success = true;
     } catch (e) {
-      console.log(e);
+      if (!error_info) {
+        error_info = e;
+      }
     }
-    stash.push([transformer, success, trans_idx, t]);
+    stash.push([transformer, success, trans_idx, t, error_info]);
     if (!t.collapsed) {
       display_tables.push(<div className='card mb-3' key={display_tables.length}>
         <div className='card-header'>
@@ -139,6 +142,7 @@ export default function App() {
                   success={success}
                   onTransform={(e) => onTransform(e, trans_idx)}
                   t_data={t}
+                  error_info={error_info}
                 >
                   {trans.render()}
                 </TransformBadge>
