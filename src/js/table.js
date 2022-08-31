@@ -1,7 +1,7 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
-import { useState, useId } from "react";
+import { useState } from "react";
 
 export class Table {
   constructor() {

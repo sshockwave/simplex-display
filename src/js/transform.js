@@ -1,4 +1,4 @@
-import { array_splice } from "./utils.js";
+import { splice } from "./utils.js";
 import Fraction from './fraction.js';
 
 export function MultiplyTransform({ up, dn, row_idx }) {
@@ -6,7 +6,6 @@ export function MultiplyTransform({ up, dn, row_idx }) {
   return {
     run(table) {
       const row = table.rows[row_idx];
-      console.assert(row.base_id === -1, 'Inequalities does not have base_id');
       table = table.shallow_clone();
       let { rel } = row;
       if (factor.neg()) {
@@ -16,7 +15,7 @@ export function MultiplyTransform({ up, dn, row_idx }) {
           rel = 'le';
         }
       }
-      table.rows = array_splice(table.rows, row_idx, 1, {
+      table.rows = splice(table.rows, row_idx, 1, {
         coef: row.coef.map(x => x.neg()),
         rel,
         p0: row.p0.neg(),
