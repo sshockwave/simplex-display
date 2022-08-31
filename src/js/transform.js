@@ -85,3 +85,27 @@ export function RelaxRow({ var_name, row_idx }) {
     },
   };
 }
+
+export function SubstituteVariable({ expr, var_id }) {
+  return {
+    run() {
+      throw 'Not Implemented';
+    },
+    render(table) {
+      let var_name = table.id_to_var[var_id];
+      if (var_name && table.var_to_id[var_name] === var_id) { // check alive
+        var_name = var_to_math(var_name);
+      } else {
+        var_name = '\\text{?}';
+      }
+      let first = true;
+      return <>
+        <Equation>{var_name + '\\to' + expr.map(e => {
+          const val = Fraction.from_frac(e.up, e.dn).to_coef_katex(first);
+          first = false;
+          return val + var_to_math(e.var_name);
+        })}</Equation>
+      </>;
+    },
+  }
+}

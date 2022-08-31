@@ -108,6 +108,7 @@ export default function App() {
         },
       };
     }
+    const rendered = transformer.render(cur);
     let success = false;
     try {
       cur = transformer.run(cur);
@@ -117,12 +118,12 @@ export default function App() {
         error_info = e;
       }
     }
-    stash.push([transformer, success, trans_idx, t, error_info]);
+    stash.push([success, trans_idx, t, error_info, rendered]);
     if (!t.collapsed) {
       display_tables.push(<div className='card mb-3 shadow-sm' key={display_tables.length}>
         <div className='card-header'>
           <ol className='breadcrumb mb-0'>
-            {stash.map(([trans, success, trans_idx, t], idx) => (
+            {stash.map(([success, trans_idx, t, error_info, rendered], idx) => (
               <li key={idx} className='breadcrumb-item'>
                 <TransformBadge
                   success={success}
@@ -130,7 +131,7 @@ export default function App() {
                   t_data={t}
                   error_info={error_info}
                 >
-                  {trans.render()}
+                  {rendered}
                 </TransformBadge>
               </li>
             ))}

@@ -54,6 +54,7 @@ export function ModifiableTerm({ coef, var_to_id, var_name, var_id, is_first, ro
       onTransform({
         type: 'insert',
         action: 'SubstituteVariable',
+        var_id,
         expr: parsed,
       });
     }}>
@@ -72,7 +73,7 @@ export function ModifiableTerm({ coef, var_to_id, var_name, var_id, is_first, ro
             }
             let cnt = 0;
             for (const t of terms) {
-              if (t.var_name) {
+              if (t.var_name !== null) {
                 cnt += 1;
                 if (Object.hasOwn(var_to_id, t.var_name)) {
                   throw 'Variable name exists';
