@@ -119,7 +119,7 @@ export default function App() {
     }
     stash.push([transformer, success, trans_idx, t, error_info]);
     if (!t.collapsed) {
-      display_tables.push(<div className='card mb-3' key={display_tables.length}>
+      display_tables.push(<div className='card mb-3 shadow-sm' key={display_tables.length}>
         <div className='card-header'>
           <ol className='breadcrumb mb-0'>
             {stash.map(([trans, success, trans_idx, t], idx) => (
@@ -162,7 +162,7 @@ export default function App() {
   }
   const id = useId();
   return <div className='container pt-3'>
-    <div className='card mb-3'>
+    <div className='card mb-3 shadow-sm'>
       <div className='card-header d-flex flex-row'>
         <div>Input</div>
         <div className='ms-auto form-check'>

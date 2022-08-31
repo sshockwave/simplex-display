@@ -64,7 +64,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
     <div className='me-2'>
       <button
         type='button'
-        className='btn btn-outline-primary'
+        className='btn btn-outline-success'
         onClick={() => onTransform({
           type: 'insert',
           action: 'MultiplyTransform',
