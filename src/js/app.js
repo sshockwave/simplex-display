@@ -11,13 +11,13 @@ function gen_mock_table() {
   table.rows = [
     {
       coef: [Fraction.from_num(3), Fraction.from_frac(4, 6)],
-      rel: 'le',
+      rel: '\\le',
       p0: Fraction.from_num(4),
       base_id: -1,
     },
     {
       coef: [Fraction.from_num(0), Fraction.from_num(4)],
-      rel: 'ge',
+      rel: '\\ge',
       p0: Fraction.from_num(3),
       base_id: -1,
     },
@@ -25,7 +25,7 @@ function gen_mock_table() {
   table.original_target_coef = [Fraction.from_num(1.5), Fraction.from_num(3)];
   table.target_coef = [Fraction.from_num(1.5), Fraction.from_num(3)];
   table.var_non_std = [
-    { id: 1, rel: 'ge', val: Fraction.from_num(-3) }
+    { id: 1, rel: '\\ge', val: Fraction.from_num(-3) }
   ];
   return table;
 }

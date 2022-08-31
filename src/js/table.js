@@ -9,7 +9,7 @@ export class Table {
     this.id_to_var = [];
 
     // Info about equations
-    // { coef: [], rel: 'le' | 'ge' | 'eq', p0: Fraction, base_id: -1 | int }
+    // { coef: [], rel: '\\le' | '\\ge' | '=', p0: Fraction, base_id: -1 | int }
     this.rows = [];
 
     this.original_target_coef = [];
@@ -32,7 +32,7 @@ export class Table {
       return false;
     }
     for (const row of this.rows) {
-      if (row.rel !== 'eq') {
+      if (row.rel !== '=') {
         return false;
       }
     }
@@ -104,7 +104,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
       <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
     </form>
   </div>}>
-    <Equation>{`\\${rel}`}</Equation>
+    <Equation>{rel}</Equation>
   </InlinePopper>;
 }
 
@@ -162,7 +162,7 @@ export function InequalitySystem({ table, onTransform }) {
     if (rel === 'any') {
       return null;
     }
-    return `${var_to_math(table.id_to_var[id])}\\${rel}${val.to_katex()}`;
+    return `${var_to_math(table.id_to_var[id])}${rel}${val.to_katex()}`;
   }).join(',');
   const std_var_list = new Set(var_list);
   for (let t of table.var_non_std) {

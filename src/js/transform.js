@@ -9,10 +9,10 @@ export function MultiplyTransform({ up, dn, row_idx }) {
       table = table.shallow_clone();
       let { rel } = row;
       if (factor.neg()) {
-        if (rel === 'le') {
-          rel = 'ge';
-        } else if (rel === 'ge') {
-          rel = 'le';
+        if (rel === '\\le') {
+          rel = '\\ge';
+        } else if (rel === '\\ge') {
+          rel = '\\le';
         }
       }
       table.rows = splice(table.rows, row_idx, 1, {
@@ -51,16 +51,16 @@ export function RelaxRow({ var_name, row_idx }) {
         throw 'The row is already relaxed';
       }
       let val = 1;
-      if (row.rel === 'eq') {
+      if (row.rel === '=') {
         if (row.p0.is_neg()) {
           val = -1;
         }
-      } else if (row.rel === 'ge') {
+      } else if (row.rel === '\\ge') {
         if (row.p0.is_pos()) {
           throw 'Greater than relations cannot be relaxed with positive values';
         }
         val = -1;
-      } else if (row.rel === 'le') {
+      } else if (row.rel === '\\le') {
         if (row.p0.is_neg()) {
           throw 'Less than relations cannot be relaxed with negative values';
         }
@@ -68,7 +68,7 @@ export function RelaxRow({ var_name, row_idx }) {
         throw 'Unrecognized relation type';
       }
       row.coef = splice(row.coef, var_id, 0, Fraction.from_num(val));
-      row.rel = 'eq';
+      row.rel = '=';
       row.base_id = var_id;
       console.log(table);
       return table;
