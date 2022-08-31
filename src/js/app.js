@@ -155,9 +155,10 @@ export default function App() {
     }
     stash.push([success, trans_idx, t, error_info, rendered]);
     if (!t.collapsed) {
-      display_tables.push(<div className='card mb-3 shadow-sm' key={display_tables.length}>
-        <div className='card-header'>
-          <ol className='breadcrumb mb-0'>
+      display_tables.push(<div key={display_tables.length}>
+        <div className='mb-3'>
+          <ol className='breadcrumb'>
+            <li className='breadcrumb-item' />
             {stash.map(([success, trans_idx, t, error_info, rendered], idx) => (
               <li key={idx} className='breadcrumb-item'>
                 <TransformBadge
@@ -170,9 +171,13 @@ export default function App() {
                 </TransformBadge>
               </li>
             ))}
-            <li className='breadcrumb-item'></li>
-            <li className='ms-auto'>
-              {cur.can_display_in_table() && !cur.display_table ? <span className='me-1'>
+            <li className='breadcrumb-item' />
+          </ol>
+        </div>
+        <div className='card mb-3 shadow-sm position-relative'>
+          <div className='d-flex flex-row position-absolute top-0 end-0'>
+            <div className='pt-2 pe-1'>
+              {cur.can_display_in_table() && !cur.display_table ? <span className='me-2'>
                 <ClickableIcon
                   onClick={() => {
                     onTransform({
@@ -185,7 +190,7 @@ export default function App() {
                   alt='text-success'
                 >table</ClickableIcon>
               </span> : null}
-              {trans_idx < transforms.length - 1 ? <ClickableIcon
+              {trans_idx < transforms.length - 1 ? <span className='me-2'><ClickableIcon
                 onClick={() => {
                   let t_data = clone(t);
                   t_data.collapsed = true;
@@ -194,15 +199,15 @@ export default function App() {
                 }}
                 main='text-secondary'
                 alt='text-success'
-              >unfold_less</ClickableIcon> : null}
-            </li>
-          </ol>
-        </div>
+              >unfold_less</ClickableIcon></span> : null}
+            </div>
+          </div>
         <div className='card-body'>
           <TableDisplay
             table={cur}
             onTransform={(e) => onTransform(e, trans_idx)}
           ></TableDisplay>
+        </div>
         </div>
       </div>);
       stash = [];
