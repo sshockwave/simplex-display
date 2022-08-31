@@ -33,9 +33,35 @@ function gen_mock_table() {
 export default function App() {
   const [initialTable, setInitialTable] = useState(gen_mock_table);
   const [transforms, setTransforms] = useState([]);
+
+  function onTransform(e, idx) {
+    const { type } = e;
+    e = clone(e);
+    delete e.type;
+    const t = transforms.slice();
+    if (type === 'insert') {
+      if (!e.show_previous && idx > 0 && !t[idx - 1].collapsed) {
+        t[idx - 1] = clone(t[idx - 1]);
+        t[idx - 1].collapsed = true;
+      }
+      e.collapsed = false;
+      t.splice(idx, 0, e);
+    } else if (type === 'delete') {
+      if (idx > 0 && t[idx - 1].collapsed) {
+        t[idx - 1] = clone(t[idx - 1]);
+        t[idx - 1].collapsed = false;
+      }
+      t.splice(idx - 1, 0, e);
+    } else {
+      throw 'Undefined transform type';
+    }
+    setTransforms(t);
+  }
+
   const tables = [initialTable];
+  let stashed_transforms = [];
+  const display_tables = [];
   let cur = initialTable;
-  let filtered_trans = [];
   for (const t of transforms) {
     try {
       const transformer = Transform[t.action](t);
@@ -44,47 +70,36 @@ export default function App() {
       console.log(e);
       continue;
     }
-    filtered_trans.push(t);
-    tables.push(cur);
-  }
-  if (filtered_trans.length < transforms.length) {
-    setTransforms(filtered_trans);
-  }
-  return <div className='container pt-3'>
-    {tables.map((table, idx) => (
-      <div className='card mb-3' key={idx}>
-        <div className='card-header d-flex py-1'>
+    if (t.collapsed) {
+      stashed_transforms.push(t);
+    } else {
+      const table_length = tables.length;
+      display_tables.push(<div className='card mb-3' key={display_tables.length}>
+        <div className='card-header d-flex'>
           <div className='ms-auto'>Actions</div>
         </div>
-        <div className='card-body py-2'>
+        <div className='card-body'>
           <TableDisplay
-            table={table}
-            onTransform={(e) => {
-              const { type } = e;
-              e = clone(e);
-              delete e.type;
-              const t = transforms.slice();
-              if (type === 'insert') {
-                if (!e.show_previous && idx > 0 && !t[idx - 1].collapsed) {
-                  t[idx - 1] = clone(t[idx - 1]);
-                  t[idx - 1].collapsed = true;
-                }
-                e.collapsed = false;
-                t.splice(idx, 0, e);
-              } else if (type === 'delete') {
-                if (idx > 0 && t[idx - 1].collapsed) {
-                  t[idx - 1] = clone(t[idx - 1]);
-                  t[idx - 1].collapsed = false;
-                }
-                t.splice(idx - 1, 0, e);
-              } else {
-                throw 'Undefined transform type';
-              }
-              setTransforms(t);
-            }}
+            table={cur}
+            onTransform={(e) => onTransform(e, table_length)}
           ></TableDisplay>
         </div>
+      </div>);
+    }
+    tables.push(cur);
+  }
+  return <div className='container pt-3'>
+    <div className='card mb-3'>
+      <div className='card-header d-flex'>
+        <div>Initial table</div>
       </div>
-    ))}
+      <div className='card-body'>
+        <TableDisplay
+          table={tables[0]}
+          onTransform={(e) => onTransform(e, 0)}
+        ></TableDisplay>
+      </div>
+    </div>
+    {display_tables}
   </div>;
 }
