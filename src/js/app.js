@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
-import { splice } from './utils.js';
+import { clone } from './utils.js';
 import * as Transform from './transform.js';
 
 function gen_mock_table() {
@@ -61,14 +61,26 @@ export default function App() {
             table={table}
             onTransform={(e) => {
               const { type } = e;
+              e = clone(e);
               delete e.type;
+              const t = transforms.slice();
               if (type === 'insert') {
-                setTransforms(splice(transforms, idx, 0, e));
+                if (!e.show_previous && idx > 0 && !t[idx - 1].collapsed) {
+                  t[idx - 1] = clone(t[idx - 1]);
+                  t[idx - 1].collapsed = true;
+                }
+                e.collapsed = false;
+                t.splice(idx, 0, e);
               } else if (type === 'delete') {
-                setTransforms(splice(transforms, idx - 1, 1));
+                if (idx > 0 && t[idx - 1].collapsed) {
+                  t[idx - 1] = clone(t[idx - 1]);
+                  t[idx - 1].collapsed = false;
+                }
+                t.splice(idx - 1, 0, e);
               } else {
                 throw 'Undefined transform type';
               }
+              setTransforms(t);
             }}
           ></TableDisplay>
         </div>
