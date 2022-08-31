@@ -47,9 +47,6 @@ export function RelaxRow({ var_name, row_idx }) {
       table = table.shallow_clone();
       const var_id = add_var(table, var_name);
       const row = table.rows[row_idx];
-      if (row.base_id !== -1) {
-        throw 'The row is already relaxed';
-      }
       let val = 1;
       if (row.rel === '=') {
         if (row.p0.is_neg()) {

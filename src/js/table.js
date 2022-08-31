@@ -111,15 +111,15 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
 function InequalityRow({
   id_to_var, var_list, coef, rel, p0, base_id, row_idx, onTransform, var_to_id,
 }) {
-  let add_sign = null;
+  let is_first = true;
   return <>
     {var_list.map((var_id, idx) => {
       let v = coef[var_id];
       if (v.is_zero()) {
         return <td key={idx}></td>;
       }
-      v = v.to_katex(add_sign);
-      add_sign = true;
+      v = v.to_coef_katex(is_first);
+      is_first = false;
       return <td key={idx}>
         <Equation>{`${v}${var_to_math(id_to_var[var_id])}`}</Equation>
       </td>;
@@ -135,7 +135,7 @@ function InequalityRow({
 }
 
 function TargetRow({ id_to_var, var_list, coef, p0 }) {
-  let add_sign = null;
+  let is_first = true;
   return <>
     {var_list.map((var_id, idx) => {
       let v = coef[var_id];
@@ -144,13 +144,13 @@ function TargetRow({ id_to_var, var_list, coef, p0 }) {
       }
       let name = id_to_var[var_id];
       name = var_to_math(name);
-      v = v.to_katex(add_sign);
-      add_sign = true;
+      v = v.to_coef_katex(is_first);
+      is_first = false;
       return <td key={idx}><Equation>{`${v}${name}`}</Equation></td>;
     })}
     <td></td>
     <td>{p0.is_zero() ? null :
-      <Equation>{p0.to_katex(true)}</Equation>
+      <Equation>{p0.to_katex()}</Equation>
     }</td>
   </>
 }

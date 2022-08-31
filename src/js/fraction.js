@@ -98,19 +98,25 @@ export default class Fraction {
     }
     return new this.constructor(a, b);
   }
-  to_katex(add_sign) {
-    let sign = '';
-    if (add_sign) {
-      sign = '+';
+  to_katex() {
+    if (this.dn === 1) {
+      return this.up.toString();
     }
-    if (this.up < 0) {
+    return `{${this.up < 0 ? '-' : ''}\\frac{${Math.abs(this.up)}}{${this.dn}}}`;
+  }
+  to_coef_katex(is_first) {
+    let sign = '+';
+    if (this.is_neg()) {
       sign = '-';
     }
-    if (add_sign === false) {
+    if (sign === '+' && is_first) {
       sign = '';
     }
     let a = Math.abs(this.up);
     if (this.dn === 1) {
+      if (a === 1) {
+        return sign;
+      }
       return `{${sign}${a}}`;
     }
     return `{${sign}\\frac{${a}}{${this.dn}}}`;
