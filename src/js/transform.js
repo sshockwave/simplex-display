@@ -153,7 +153,8 @@ export function SubstituteVariable({ expr, var_id }) {
             id: table.id_to_var.length - 1,
             rel: 'any',
           });
-        } else { // cnt == 2
+        } else {
+          console.assert(cnt === 2);
           if ((expr[0].up < 0) != (expr[1].up < 0)) {
             throw 'Two variables must have different signs';
           }

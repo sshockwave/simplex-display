@@ -10,7 +10,7 @@ function parse_linear_expr(str) {
   }
   for (
     let m;
-    m = str.match(/^([+-]\d*(?:\d[.\/]\d+)?)\*?([a-zA-Z]+\d*)?(?=\+|-|$)/), m && m[0] != '';
+    m = str.match(/^([+-]\d*(?:\d[.\/]\d+)?)\*?([a-zA-Z]+\d*'*)?(?=\+|-|$)/), m && m[0] != '';
     str = str.substring(m[0].length)
   ) {
     let coef = m[1], var_name = m[2];
