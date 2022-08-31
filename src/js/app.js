@@ -167,7 +167,7 @@ export default function App() {
         <div>Input</div>
         <div className='ms-auto form-check'>
           <input class='form-check-input' type='checkbox' value={true} id={id} checked/>
-          <label class='form-check-label' for={id}>
+          <label class='form-check-label' htmlFor={id}>
             Locked
           </label>
         </div>
