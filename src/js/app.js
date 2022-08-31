@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 import { clone } from './utils.js';
@@ -170,10 +170,17 @@ export default function App() {
     }
     tables.push(cur);
   }
+  const id = useId();
   return <div className='container pt-3'>
     <div className='card mb-3'>
-      <div className='card-header d-flex'>
-        <div>Initial table</div>
+      <div className='card-header d-flex flex-row'>
+        <div>Input</div>
+        <div className='ms-auto form-check'>
+          <input class='form-check-input' type='checkbox' value={true} id={id} checked/>
+          <label class='form-check-label' for={id}>
+            Locked
+          </label>
+        </div>
       </div>
       <div className='card-body'>
         <TableDisplay
