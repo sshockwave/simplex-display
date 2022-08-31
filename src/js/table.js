@@ -2,6 +2,7 @@ import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
 import { useState } from "react";
+import { ModifiableTerm } from "./components/variable";
 
 export class Table {
   constructor() {
@@ -114,14 +115,20 @@ function InequalityRow({
   let is_first = true;
   return <>
     {var_list.map((var_id, idx) => {
-      let v = coef[var_id];
-      if (v.is_zero()) {
-        return <td key={idx}></td>;
+      const old_is_first = is_first;
+      if (!coef[var_id].is_zero()) {
+        is_first = false;
       }
-      v = v.to_coef_katex(is_first);
-      is_first = false;
       return <td key={idx}>
-        <Equation>{`${v}${var_to_math(id_to_var[var_id])}`}</Equation>
+        <ModifiableTerm
+          coef={coef[var_id]}
+          var_to_id={var_to_id}
+          var_name={id_to_var[var_id]}
+          var_id={var_id}
+          is_first={old_is_first}
+          row_idx={row_idx}
+          base_id={base_id}
+        />
       </td>;
     })}
     <td><InequalitySign
@@ -134,19 +141,24 @@ function InequalityRow({
   </>;
 }
 
-function TargetRow({ id_to_var, var_list, coef, p0 }) {
+function TargetRow({ id_to_var, var_list, coef, p0, var_to_id }) {
   let is_first = true;
   return <>
     {var_list.map((var_id, idx) => {
-      let v = coef[var_id];
-      if (v.is_zero()) {
-        return <td key={idx}></td>;
+      const old_is_first = is_first;
+      if (!coef[var_id].is_zero()) {
+        is_first = false;
       }
-      let name = id_to_var[var_id];
-      name = var_to_math(name);
-      v = v.to_coef_katex(is_first);
-      is_first = false;
-      return <td key={idx}><Equation>{`${v}${name}`}</Equation></td>;
+      return <td key={idx}>
+        <ModifiableTerm
+          coef={coef[var_id]}
+          var_to_id={var_to_id}
+          var_name={id_to_var[var_id]}
+          var_id={var_id}
+          is_first={old_is_first}
+          row_idx={-1}
+        />
+      </td>;
     })}
     <td></td>
     <td>{p0.is_zero() ? null :
