@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 function HoverIcon({ children, main, alt }) {
   const [hover, setHover] = useState(false);
   return <span
-    class={`material-icon ${hover ? alt : main}`}
+    className={`material-icon ${hover ? alt : main}`}
     onMouseOver={() => setHover(true)}
     onMouseLeave={() => setHover(false)}
   >
