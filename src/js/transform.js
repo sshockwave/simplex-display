@@ -1,5 +1,6 @@
 import { splice, clone } from "./utils.js";
 import Fraction from './fraction.js';
+import { Equation, var_to_math } from "./equation.js";
 
 export function MultiplyTransform({ up, dn, row_idx }) {
   const factor = Fraction.from_frac(up, dn);
@@ -22,6 +23,10 @@ export function MultiplyTransform({ up, dn, row_idx }) {
         base_id: -1,
       });
       return table;
+    },
+    render() {
+      let r = row_idx + 1;
+      return <Equation>{`(${r})'=${factor.to_coef_katex(true)}(${r})`}</Equation>;
     },
   }
 }
@@ -69,6 +74,14 @@ export function RelaxRow({ var_name, row_idx }) {
       row.base_id = var_id;
       console.log(table);
       return table;
+    },
+    render() {
+      return <>
+        {'Relax '}
+        <Equation>{`(${row_idx + 1})`}</Equation>
+        {' with '}
+        <Equation>{var_to_math(var_name)}</Equation>
+      </>;
     },
   };
 }
