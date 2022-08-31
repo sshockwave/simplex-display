@@ -1,6 +1,7 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
+import { useState, useId } from "react";
 
 export class Table {
   constructor() {
@@ -39,12 +40,29 @@ export class Table {
   }
 };
 
-function InequalitySign({ rel, row_idx, onTransform }) {
-  return <InlinePopper content={<>
-    <div className='py-2 ps-2'>
+function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
+  const [relax_is_valid, set_relax_is_valid] = useState(true);
+  function find_good_name() {
+    for (let i = 1; ; i++) {
+      if (!Object.hasOwn(var_to_id, `x${i}`)) {
+        return `x${i}`;
+      }
+    }
+  }
+  function is_good_name(s) {
+    if (!s.match(/^[a-zA-Z]+\d*'*$/)) {
+      return false;
+    }
+    if (Object.hasOwn(var_to_id, s)) {
+      return false;
+    }
+    return true;
+  }
+  return <InlinePopper content={() => <div className='pt-2 pb-1 ps-2 d-flex flex-row'>
+    <div className='me-2'>
       <button
         type='button'
-        className='btn btn-outline-primary btn-sm me-2'
+        className='btn btn-outline-primary'
         onClick={() => onTransform({
           type: 'insert',
           action: 'MultiplyTransform',
@@ -54,13 +72,31 @@ function InequalitySign({ rel, row_idx, onTransform }) {
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
-  </>}>
+    <form className='has-validation me-2 input-group' onSubmit={(ev) => {
+      ev.preventDefault();
+    }}>
+      <input
+        type='text'
+        className={`form-control is-${relax_is_valid ? 'valid' : 'invalid'}`}
+        placeholder={find_good_name()}
+        onInput={(ev) => {
+          const val = ev.target.value;
+          set_relax_is_valid(val === '' || is_good_name(val));
+        }}
+      />
+      <button
+        type='submit'
+        className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
+      >Relax</button>
+      <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
+    </form>
+  </div>}>
     <Equation>{`\\${rel}`}</Equation>
   </InlinePopper>;
 }
 
 function InequalityRow({
-  id_to_var, var_list, coef, rel, p0, base_id, row_idx, onTransform
+  id_to_var, var_list, coef, rel, p0, base_id, row_idx, onTransform, var_to_id,
 }) {
   let add_sign = null;
   return <>
@@ -79,6 +115,7 @@ function InequalityRow({
       rel={rel}
       row_idx={row_idx}
       onTransform={onTransform}
+      var_to_id={var_to_id}
     ></InequalitySign></td>
     <td><Equation>{p0.to_katex()}</Equation></td>
   </>;
@@ -151,6 +188,7 @@ export function InequalitySystem({ table, onTransform }) {
             var_list={var_list}
             row_idx={idx}
             onTransform={onTransform}
+            var_to_id={table.var_to_id}
             {...row}
           ></InequalityRow>
         </tr>
