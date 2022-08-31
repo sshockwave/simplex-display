@@ -8,7 +8,7 @@ function HoverIcon({ children, main, alt }) {
     onMouseOver={() => setHover(true)}
     onMouseLeave={() => setHover(false)}
   >
-    error
+    {children}
   </span>;
 }
 
