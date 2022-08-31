@@ -2,6 +2,16 @@ import { splice, clone } from "./utils.js";
 import Fraction from './fraction.js';
 import { Equation, var_to_math } from "./equation.js";
 
+function swap_le_ge(x) {
+  if (x === '\\le') {
+    return '\\ge';
+  }
+  if (x === '\\ge') {
+    return '\\le';
+  }
+  console.assert(false);
+}
+
 export function MultiplyTransform({ up, dn, row_idx }) {
   const factor = Fraction.from_frac(up, dn);
   return {
@@ -10,11 +20,7 @@ export function MultiplyTransform({ up, dn, row_idx }) {
       table = table.shallow_clone();
       let { rel } = row;
       if (factor.neg()) {
-        if (rel === '\\le') {
-          rel = '\\ge';
-        } else if (rel === '\\ge') {
-          rel = '\\le';
-        }
+        rel = swap_le_ge(rel);
       }
       table.rows = splice(table.rows, row_idx, 1, {
         coef: row.coef.map(x => x.neg()),
@@ -72,7 +78,6 @@ export function RelaxRow({ var_name, row_idx }) {
       row.coef = splice(row.coef, var_id, 0, Fraction.from_num(val));
       row.rel = '=';
       row.base_id = var_id;
-      console.log(table);
       return table;
     },
     render() {
@@ -88,8 +93,103 @@ export function RelaxRow({ var_name, row_idx }) {
 
 export function SubstituteVariable({ expr, var_id }) {
   return {
-    run() {
-      throw 'Not Implemented';
+    run(table) {
+      if (expr.length > 2) {
+        throw 'Substitution with more than two variables is not supported';
+      }
+      table = table.deep_clone();
+      if (!table.is_id_alive(var_id)) {
+        throw 'Variable does not exist';
+      }
+      delete table.var_to_id[table.id_to_var[var_id]];
+      for (const row of table.rows) {
+        if (row.base_id === var_id) {
+          throw 'This variable is used as base';
+        }
+      }
+      let cnt = 0;
+      let const_term_sum = Fraction.zero;
+      for (const e of expr) {
+        const e_coef = Fraction.from_frac(e.up, e.dn);
+        if (e.var_name !== null) {
+          cnt += 1;
+          if (table.is_name_in_use(e.var_name)) {
+            throw `Variable name ${e.var_name} is already used.`
+          }
+          const e_id = table.id_to_var.length;
+          table.var_to_id[e.var_name] = e_id;
+          table.id_to_var.push(e.var_name);
+          for (const row of table.rows) {
+            row.coef.push(row.coef[var_id].mul(e_coef));
+          }
+          table.original_target_coef.push(0);
+          table.target_coef.push(table.target_coef[var_id].mul(e_coef));
+        } else {
+          for (const row of table.rows) {
+            row.p0 = row.p0.sub(row.coef[var_id].mul(e_coef));
+          }
+          table.target_p0 = table.target_p0.add(table.target_coef[var_id].mul(e_coef));
+          const_term_sum = const_term_sum.add(e_coef);
+        }
+      }
+      if (cnt === 0) {
+        throw 'At least one free variable is required';
+      }
+      let constraint = {
+        id: var_id,
+        rel: '\\ge',
+        val: Fraction.zero,
+      };
+      for (const [i, t] of table.var_non_std.entries()) {
+        if (t.id === var_id) {
+          constraint = t;
+          table.var_non_std.splice(i, 1);
+          break;
+        }
+      }
+      if (constraint.rel === 'any') {
+        if (cnt === 1) {
+          table.var_non_std.push({
+            id: table.id_to_var.length - 1,
+            rel: 'any',
+          });
+        } else { // cnt == 2
+          if ((expr[0].up < 0) != (expr[1].up < 0)) {
+            throw 'Two variables must have different signs';
+          }
+          // No constraint on variables
+        }
+      } else {
+        if (cnt === 2) {
+          throw 'Substituting le / ge constraints with two variables is not supported';
+        }
+        console.assert(cnt === 1);
+        let { rel } = constraint;
+        let e = null;
+        for (const tmp_e of expr) {
+          if (tmp_e.var_name !== null) {
+            e = tmp_e;
+            break
+          }
+        }
+        console.assert(e !== null);
+        const lhs = Fraction.from_frac(e.up, e.dn);
+        const rhs = constraint.val.sub(const_term_sum).div(lhs);
+        if (lhs.is_neg()) {
+          rel = swap_le_ge(rel);
+        }
+        const new_constraint = {
+          id: table.var_to_id[e.var_name],
+          rel,
+          val: rhs,
+        };
+        if (rel === '\\ge' && rhs.is_zero()) {
+          // Standard constraint
+        } else {
+          table.var_non_std.push(new_constraint);
+        }
+      }
+      return table;
     },
     render(table) {
       let var_name = table.id_to_var[var_id];
@@ -101,10 +201,15 @@ export function SubstituteVariable({ expr, var_id }) {
       let first = true;
       return <>
         <Equation>{var_name + '\\to' + expr.map(e => {
-          const val = Fraction.from_frac(e.up, e.dn).to_coef_katex(first);
+          let val = Fraction.from_frac(e.up, e.dn);
+          if (e.var_name === null) {
+            val = val.to_katex(first);
+          } else {
+            val = val.to_coef_katex(first) + var_to_math(e.var_name);
+          }
           first = false;
-          return val + var_to_math(e.var_name);
-        })}</Equation>
+          return val;
+        }).join('')}</Equation>
       </>;
     },
   }

@@ -1,6 +1,7 @@
 import { Equation, var_to_math } from "./equation";
 import Fraction from "./fraction";
 import { InlinePopper } from "./popper";
+import { clone } from './utils.js';
 import { useState } from "react";
 import { ModifiableTerm } from "./components/variable";
 
@@ -28,6 +29,23 @@ export class Table {
   shallow_clone() {
     return Object.assign(new Table, this);
   }
+  deep_clone() {
+    const t = new Table();
+    t.var_to_id = clone(this.var_to_id);
+    t.id_to_var = this.id_to_var.slice();
+    t.rows = this.rows.map((row) => {
+      row = clone(row);
+      row.coef = row.coef.slice();
+      return row;
+    });
+    t.original_target_coef = this.original_target_coef.slice();
+    t.target_coef = this.target_coef.slice();
+    t.target_p0 = this.target_p0;
+    t.target_is_max = this.target_is_max;
+    t.var_non_std = this.var_non_std.slice();
+    t.display_table = this.display_table;
+    return t;
+  }
   can_display_in_table() {
     if (this.var_non_std.length !== 0) {
       return false;
@@ -38,6 +56,12 @@ export class Table {
       }
     }
     return true;
+  }
+  is_id_alive(id) {
+    return this.var_to_id[this.id_to_var[id]] === id;
+  }
+  is_name_in_use(var_name) {
+    return Object.hasOwn(this.var_to_id, var_name);
   }
 };
 
@@ -200,6 +224,7 @@ export function InequalitySystem({ table, onTransform }) {
         </th>
         <TargetRow
           id_to_var={table.id_to_var}
+          var_to_id={table.var_to_id}
           var_list={var_list}
           coef={table.target_coef}
           p0={table.target_p0}
@@ -222,14 +247,14 @@ export function InequalitySystem({ table, onTransform }) {
         </tr>
       ))}
     </tbody>
-    {table.var_non_std.length > 0 ? <tbody>
+    <tbody>
       <tr className='mb-3'>
         <th className='pe-3'><Equation>{'\\text{and}'}</Equation></th>
         <td colSpan={Object.keys(table.var_to_id).length + 2} className='text-start'>
           <Equation>{single_constraints}</Equation>
         </td>
       </tr>
-    </tbody> : null}
+    </tbody>
   </table>;
 }
 

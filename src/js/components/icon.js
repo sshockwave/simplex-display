@@ -16,7 +16,6 @@ export function ErrorIcon({ children }) {
   const ref = useRef();
   useEffect(() => {
     const tooltip = new Tooltip(ref.current);
-    console.log(tooltip);
     return () => {
       tooltip.dispose();
     }

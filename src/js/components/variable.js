@@ -14,14 +14,14 @@ function parse_linear_expr(str) {
     str = str.substring(m[0].length)
   ) {
     let coef = m[1], var_name = m[2];
-    if (coef.charAt(0) === '+') {
-      coef = coef.substring(1);
-    }
-    if (coef === '') {
+    if (coef === '+') {
       coef = Fraction.from_num(1);
     } else if (coef === '-') {
-      coef = Fraction.from_num(0);
+      coef = Fraction.from_num(-1);
     } else {
+      if (coef.charAt(0) === '+') {
+        coef = coef.substring(1);
+      }
       coef = Fraction.from_str(coef);
       if (coef.is_zero()) {
         throw 'Coefficient of variables can\'t be zero';
