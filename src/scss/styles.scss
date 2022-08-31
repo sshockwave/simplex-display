@@ -6,6 +6,10 @@ $breadcrumb-divider: quote("⟩");
 $material-symbols-font-path: '../../node_modules/material-symbols/';
 @import '~material-symbols/rounded.scss';
 
+body {
+  overflow-y: scroll;
+}
+
 .is-clickable {
   cursor: pointer;
 }
