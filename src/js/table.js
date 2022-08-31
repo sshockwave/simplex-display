@@ -128,6 +128,7 @@ function InequalityRow({
           is_first={old_is_first}
           row_idx={row_idx}
           base_id={base_id}
+          onTransform={onTransform}
         />
       </td>;
     })}
@@ -141,7 +142,7 @@ function InequalityRow({
   </>;
 }
 
-function TargetRow({ id_to_var, var_list, coef, p0, var_to_id }) {
+function TargetRow({ id_to_var, var_list, coef, p0, var_to_id, onTransform }) {
   let is_first = true;
   return <>
     {var_list.map((var_id, idx) => {
@@ -157,6 +158,7 @@ function TargetRow({ id_to_var, var_list, coef, p0, var_to_id }) {
           var_id={var_id}
           is_first={old_is_first}
           row_idx={-1}
+          onTransform={onTransform}
         />
       </td>;
     })}
@@ -201,6 +203,7 @@ export function InequalitySystem({ table, onTransform }) {
           var_list={var_list}
           coef={table.target_coef}
           p0={table.target_p0}
+          onTransform={onTransform}
         ></TargetRow>
       </tr>
     </thead>
