@@ -25,3 +25,10 @@ export function ErrorIcon({ children }) {
     <HoverIcon main='text-danger opacity-50' alt='text-danger'>error</HoverIcon>
   </span>;
 }
+
+export function ClickableIcon({ children, onClick, main, alt }) {
+  const [hover, setHover] = useState(false);
+  return <a onClick={onClick} className='is-clickable text-decoration-none'>
+    <HoverIcon main={main} alt={alt}>{children}</HoverIcon>
+  </a>;
+}

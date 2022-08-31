@@ -3,7 +3,7 @@ import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 import { clone } from './utils.js';
 import * as Transform from './transform.js';
-import { ErrorIcon } from './components/error_icon.js';
+import { ClickableIcon, ErrorIcon } from './components/icon.js';
 
 function gen_mock_table() {
   let table = new Table;
@@ -31,20 +31,6 @@ function gen_mock_table() {
   return table;
 }
 
-function ClickableIcon({ children, onClick, main, alt }) {
-  const [hover, setHover] = useState(false);
-  return <a
-    onMouseOver={() => {
-      setHover(true);
-    }}
-    onMouseLeave={() => {
-      setHover(false);
-    }}
-    onClick={onClick}
-    className={`text-${hover ? alt : main} material-icon text-decoration-none is-clickable`}
-  >{children}</a>;
-}
-
 function TransformBadge({ t_data, children, success, onTransform, error_info }) {
   return <span className='position-relative'>
     <span
@@ -66,8 +52,8 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
     {success ? null : <ErrorIcon>{error_info}</ErrorIcon>}
     <ClickableIcon
       onClick={() => onTransform({ type: 'delete' })}
-      main='secondary'
-      alt='danger'
+      main='text-secondary'
+      alt='text-danger'
     >delete</ClickableIcon>
   </span>;
 }
@@ -157,8 +143,8 @@ export default function App() {
                   t_data.type = 'update';
                   onTransform(t_data, trans_idx);
                 }}
-                main='secondary'
-                alt='success'
+                main='text-secondary'
+                alt='text-success'
               >unfold_less</ClickableIcon> : null}
              </li>
           </ol>
