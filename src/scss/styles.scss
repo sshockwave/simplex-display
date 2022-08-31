@@ -28,6 +28,11 @@ body {
   border-bottom: solid 2px $primary;
 }
 
+.simplex-table .active {
+  color: $table-hover-color;
+  background-color: $table-hover-bg;
+}
+
 .material-icon {
   font-family: 'Material Symbols Rounded';
   user-select: none;
