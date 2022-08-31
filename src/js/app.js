@@ -31,6 +31,41 @@ function gen_mock_table() {
   return table;
 }
 
+function gen_displayable_table() {
+  let table = new Table;
+  table.var_to_id = { 'x1': 0, 'x2': 1 };
+  table.id_to_var = ['x1', 'x2'];
+  table.rows = [
+    {
+      coef: [Fraction.from_num(2), Fraction.from_num(2)],
+      rel: '\\le',
+      p0: Fraction.from_num(4),
+      base_id: -1,
+    },
+    {
+      coef: [Fraction.from_num(1), Fraction.from_num(2)],
+      rel: '\\le',
+      p0: Fraction.from_num(8),
+      base_id: -1,
+    },
+    {
+      coef: [Fraction.from_num(4), Fraction.from_num(0)],
+      rel: '\\le',
+      p0: Fraction.from_num(16),
+      base_id: -1,
+    },
+    {
+      coef: [Fraction.from_num(0), Fraction.from_num(4)],
+      rel: '\\le',
+      p0: Fraction.from_num(12),
+      base_id: -1,
+    },
+  ];
+  table.original_target_coef = [Fraction.from_num(2), Fraction.from_num(3)];
+  table.target_coef = [Fraction.from_num(2), Fraction.from_num(3)];
+  return table;
+}
+
 function TransformBadge({ t_data, children, success, onTransform, error_info }) {
   return <span className='position-relative'>
     <span
@@ -59,23 +94,23 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
 }
 
 export default function App() {
-  const [initialTable, setInitialTable] = useState(gen_mock_table);
+  const [initialTable, setInitialTable] = useState(gen_displayable_table);
   const [transforms, setTransforms] = useState([]);
 
   function onTransform(e, idx) {
     const { type } = e;
     e = clone(e);
     delete e.type;
-    if (idx === transforms.length - 1) {
-      e.collapsed = false;
-    }
     const t = transforms.slice();
     if (type === 'insert') { // insert after idx
       if (!e.show_previous && idx >= 0 && !t[idx].collapsed) {
         t[idx] = clone(t[idx]);
-        t[idx].collapsed = true;
+        t[idx].collapsed = !e.keep_previous;
       }
       e.collapsed = e.collapsed || false;
+      if (idx === transforms.length - 1) {
+        e.collapsed = false;
+      }
       t.splice(idx + 1, 0, e);
     } else if (type === 'delete') { // delete idx
       if (idx > 0 && t[idx - 1].collapsed && !t[idx].collapsed) {
@@ -137,6 +172,19 @@ export default function App() {
             ))}
             <li className='breadcrumb-item'></li>
             <li className='ms-auto'>
+              {cur.can_display_in_table() && !cur.display_table ? <span className='me-1'>
+                <ClickableIcon
+                  onClick={() => {
+                    onTransform({
+                      type: 'insert',
+                      action: 'DisplayInTable',
+                      keep_previous: true,
+                    }, trans_idx);
+                  }}
+                  main='text-secondary'
+                  alt='text-success'
+                >table</ClickableIcon>
+              </span> : null}
               {trans_idx < transforms.length - 1 ? <ClickableIcon
                 onClick={() => {
                   let t_data = clone(t);
@@ -147,7 +195,7 @@ export default function App() {
                 main='text-secondary'
                 alt='text-success'
               >unfold_less</ClickableIcon> : null}
-             </li>
+            </li>
           </ol>
         </div>
         <div className='card-body'>
@@ -167,7 +215,7 @@ export default function App() {
       <div className='card-header d-flex flex-row'>
         <div>Input</div>
         <div className='ms-auto form-check'>
-          <input className='form-check-input' type='checkbox' value={true} id={id} checked/>
+          <input className='form-check-input' type='checkbox' value={true} id={id} checked />
           <label className='form-check-label' htmlFor={id}>
             Locked
           </label>

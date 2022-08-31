@@ -215,3 +215,22 @@ export function SubstituteVariable({ expr, var_id }) {
     },
   }
 }
+
+export function DisplayInTable() {
+  return {
+    run(table) {
+      if (table.display_table) {
+        return table;
+      }
+      if (!table.can_display_in_table()) {
+        throw 'Cannot be displayed in table currently';
+      }
+      table = table.shallow_clone();
+      table.display_table = true;
+      return table;
+    },
+    render() {
+      return 'Show Table';
+    },
+  }
+}

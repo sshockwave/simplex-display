@@ -4,6 +4,7 @@ import { InlinePopper } from "./popper";
 import { clone } from './utils.js';
 import { useState } from "react";
 import { ModifiableTerm } from "./components/variable";
+import { SimplexTable } from "./components/table";
 
 export class Table {
   constructor() {
@@ -52,6 +53,9 @@ export class Table {
     }
     for (const row of this.rows) {
       if (row.rel !== '=') {
+        return false;
+      }
+      if (row.base_id === -1) {
         return false;
       }
     }
@@ -260,7 +264,7 @@ export function InequalitySystem({ table, onTransform }) {
 
 export function TableDisplay({ table, onTransform }) {
   if (table.display_table) {
-    console.assert(false, 'TODO');
+    return <SimplexTable table={table} />;
   } else {
     return <InequalitySystem table={table} onTransform={onTransform}></InequalitySystem>;
   }
