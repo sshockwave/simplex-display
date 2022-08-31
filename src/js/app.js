@@ -30,22 +30,44 @@ function gen_mock_table() {
   return table;
 }
 
-function TransformBadge({ children, active, success, onTransform }) {
-  const [delHover, setDelHover] = useState(false);
+function ClickableIcon({ children, onClick, main, alt }) {
+  const [hover, setHover] = useState(false);
+  return <a
+    onMouseOver={() => {
+      setHover(true);
+    }}
+    onMouseLeave={() => {
+      setHover(false);
+    }}
+    onClick={onClick}
+    className={`me-1 text-${hover ? alt : main} material-icon text-decoration-none is-clickable`}
+  >{children}</a>;
+}
+
+function TransformBadge({ t_data, children, success, onTransform }) {
   return <span className='position-relative'>
-    <span className={success ? '' :'text-danger border-2 border-bottom border-danger'}>
+    <span
+      onClick={() => {
+        if (t_data.collapsed) {
+          t_data = clone(t_data);
+          t_data.type = 'update';
+          t_data.collapsed = false;
+          onTransform(t_data);
+        }
+      }}
+      className={`
+        ${t_data.collapsed ? 'is-clickable' : ''}
+        ${success ? '' :'text-danger border-2 border-bottom border-danger'}
+        me-1
+      `}
+    >
       {children}
     </span>
-    <a
-      onMouseOver={() => {
-        setDelHover(true);
-      }}
-      onMouseLeave={() => {
-        setDelHover(false);
-      }}
+    <ClickableIcon
       onClick={() => onTransform({ type: 'delete' })}
-      className={`ps-1 text-${delHover ? 'danger' : 'secondary'} material-icon text-decoration-none is-clickable`}
-    >delete</a>
+      main='secondary'
+      alt='danger'
+    >delete</ClickableIcon>
   </span>;
 }
 
@@ -57,13 +79,16 @@ export default function App() {
     const { type } = e;
     e = clone(e);
     delete e.type;
+    if (idx === transforms.length - 1) {
+      e.collapsed = false;
+    }
     const t = transforms.slice();
     if (type === 'insert') { // insert after idx
       if (!e.show_previous && idx >= 0 && !t[idx].collapsed) {
         t[idx] = clone(t[idx]);
         t[idx].collapsed = true;
       }
-      e.collapsed = false;
+      e.collapsed = e.collapsed || false;
       t.splice(idx + 1, 0, e);
     } else if (type === 'delete') { // delete idx
       if (idx > 0 && t[idx - 1].collapsed != t[idx].collapsed) {
@@ -71,6 +96,8 @@ export default function App() {
         t[idx - 1].collapsed = t[idx].collapsed;
       }
       t.splice(idx, 1);
+    } else if (type === 'update') {
+      t.splice(idx, 1, e);
     } else {
       throw 'Undefined transform type';
     }
@@ -101,22 +128,34 @@ export default function App() {
     } catch (e) {
       console.log(e);
     }
-    stash.push([transformer, success, trans_idx]);
+    stash.push([transformer, success, trans_idx, t]);
     if (!t.collapsed) {
       display_tables.push(<div className='card mb-3' key={display_tables.length}>
         <div className='card-header'>
           <ol className='breadcrumb mb-0'>
-            {stash.map(([trans, success, trans_idx], idx) => (
+            {stash.map(([trans, success, trans_idx, t], idx) => (
               <li key={idx} className={`breadcrumb-item`}>
                 <TransformBadge
                   success={success}
                   onTransform={(e) => onTransform(e, trans_idx)}
-                  active={idx === stash.length - 1}
+                  t_data={t}
                 >
                   {trans.render()}
                 </TransformBadge>
               </li>
             ))}
+            <li className='ms-auto'>
+              {trans_idx < transforms.length - 1 ? <ClickableIcon
+                onClick={() => {
+                  let t_data = clone(t);
+                  t_data.collapsed = true;
+                  t_data.type = 'update';
+                  onTransform(t_data, trans_idx);
+                }}
+                main='secondary'
+                alt='success'
+              >unfold_less</ClickableIcon> : null}
+             </li>
           </ol>
         </div>
         <div className='card-body'>
