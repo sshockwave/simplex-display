@@ -49,6 +49,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
       }
     }
   }
+  const a_good_name = find_good_name();
   function is_good_name(s) {
     if (!s.match(/^[a-zA-Z]+\d*'*$/)) {
       return false;
@@ -74,14 +75,26 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
     </div>
     <form className='has-validation me-2 input-group' onSubmit={(ev) => {
       ev.preventDefault();
+      let val = ev.target.value;
+      if (!val) {
+        val = a_good_name;
+      }
+      if (is_good_name(val)) {
+        onTransform({
+          type: 'insert',
+          action: 'RelaxRow',
+          var_name: val,
+          row_idx,
+        });
+      }
     }}>
       <input
         type='text'
         className={`form-control is-${relax_is_valid ? 'valid' : 'invalid'}`}
-        placeholder={find_good_name()}
+        placeholder={a_good_name}
         onInput={(ev) => {
           const val = ev.target.value;
-          set_relax_is_valid(val === '' || is_good_name(val));
+          set_relax_is_valid(!val || is_good_name(val));
         }}
       />
       <button

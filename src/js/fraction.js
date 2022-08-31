@@ -8,6 +8,7 @@ export default class Fraction {
   constructor(a, b) {
     this.up = a, this.dn = b;
   }
+  static zero = new Fraction(0, 1);
   static from_frac(a, b) {
     if (b === 0) {
       throw 'Denominator cannot be zero';
@@ -62,6 +63,9 @@ export default class Fraction {
   }
   eq(that) {
     return this.up === that.up && this.dn === that.dn;
+  }
+  is_pos() {
+    return this.up > 0;
   }
   is_neg() {
     return this.up < 0;

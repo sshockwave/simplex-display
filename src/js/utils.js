@@ -4,3 +4,7 @@ export function splice(arr, ...args) {
   arr.splice(...args);
   return arr;
 }
+
+export function clone(obj) {
+  return Object.assign({}, obj);
+}
