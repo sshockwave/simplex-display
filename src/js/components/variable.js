@@ -97,6 +97,8 @@ export function ModifiableTerm({ coef, var_to_id, var_name, var_id, is_first, ro
       <div className='invalid-feedback'></div>
     </form>
   </div>}>
-    <Equation>{`${coef}${var_to_math(var_name)}`}</Equation>
+    <span class='is-text-link'>
+      <Equation>{`${coef}${var_to_math(var_name)}`}</Equation>
+    </span>
   </InlinePopper>;
 }

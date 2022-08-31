@@ -6,8 +6,22 @@ $breadcrumb-divider: quote("⟩");
 $material-symbols-font-path: '../../node_modules/material-symbols/';
 @import '~material-symbols/rounded.scss';
 
-.is-clickable:hover {
+.is-clickable {
   cursor: pointer;
+}
+
+.is-text-link {
+  position: relative;
+}
+
+.is-text-link:hover::before {
+  content: ' ';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  bottom: -2px;
+  border-bottom: solid 2px $primary;
 }
 
 .material-icon {

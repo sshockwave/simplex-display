@@ -78,7 +78,7 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
         }
       }}
       className={`
-        ${t_data.collapsed ? 'is-clickable' : ''}
+        ${t_data.collapsed ? 'is-text-link is-clickable' : ''}
         me-1
       `}
     >
@@ -87,7 +87,7 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
     {success ? null : <ErrorIcon>{error_info}</ErrorIcon>}
     <ClickableIcon
       onClick={() => onTransform({ type: 'delete' })}
-      main='text-secondary'
+      main='text-secondary opacity-50'
       alt='text-danger'
     >delete</ClickableIcon>
   </span>;

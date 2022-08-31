@@ -133,7 +133,9 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
       <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
     </form>
   </div>}>
-    <Equation>{rel}</Equation>
+    <span class='is-text-link'>
+      <Equation>{rel}</Equation>
+    </span>
   </InlinePopper>;
 }
 
