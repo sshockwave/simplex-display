@@ -15,7 +15,6 @@ export class Table {
     // { coef: [], rel: '\\le' | '\\ge' | '=', p0: Fraction, base_id: -1 | int }
     this.rows = [];
 
-    this.original_target_coef = [];
     this.target_coef = []; // Current
     this.target_p0 = Fraction.from_num(0);
     this.target_is_max = true;
@@ -39,7 +38,6 @@ export class Table {
       row.coef = row.coef.slice();
       return row;
     });
-    t.original_target_coef = this.original_target_coef.slice();
     t.target_coef = this.target_coef.slice();
     t.target_p0 = this.target_p0;
     t.target_is_max = this.target_is_max;

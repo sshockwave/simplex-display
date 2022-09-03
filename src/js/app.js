@@ -23,7 +23,6 @@ function gen_mock_table() {
       base_id: -1,
     },
   ];
-  table.original_target_coef = [Fraction.from_num(1.5), Fraction.from_num(3)];
   table.target_coef = [Fraction.from_num(1.5), Fraction.from_num(3)];
   table.var_non_std = [
     { id: 1, rel: '\\ge', val: Fraction.from_num(-3) }
@@ -61,7 +60,6 @@ function gen_displayable_table() {
       base_id: -1,
     },
   ];
-  table.original_target_coef = [Fraction.from_num(2), Fraction.from_num(3)];
   table.target_coef = [Fraction.from_num(2), Fraction.from_num(3)];
   return table;
 }

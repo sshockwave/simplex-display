@@ -47,7 +47,6 @@ function add_var(table, var_name) {
     row.coef = splice(row.coef, var_id, 0, Fraction.zero);
     return row;
   });
-  table.original_target_coef = splice(table.original_target_coef, var_id, 0, Fraction.zero);
   table.target_coef = splice(table.target_coef, var_id, 0, Fraction.zero);
   return var_id;
 }
@@ -122,7 +121,6 @@ export function SubstituteVariable({ expr, var_id }) {
           for (const row of table.rows) {
             row.coef.push(row.coef[var_id].mul(e_coef));
           }
-          table.original_target_coef.push(0);
           table.target_coef.push(table.target_coef[var_id].mul(e_coef));
         } else {
           for (const row of table.rows) {
@@ -226,6 +224,7 @@ export function DisplayInTable() {
         throw 'Cannot be displayed in table currently';
       }
       table = table.shallow_clone();
+      table.original_target_coef = table.target_coef;
       table.display_table = true;
       return table;
     },
