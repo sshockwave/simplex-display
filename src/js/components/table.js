@@ -14,9 +14,9 @@ export function SimplexTable({ table, hl }) {
         <th colSpan='3'>
           <Equation>{'c_j'}</Equation>
         </th>
-        {table.original_target_coef.map((v, idx) => (
+        {var_list.map((var_id, idx) => (
           <td key={idx} className={focus[1] === idx ? 'active' : ''}>
-            <Equation>{v.to_katex()}</Equation>
+            <Equation>{table.original_target_coef[var_id].to_katex()}</Equation>
           </td>
         ))}
         <th rowSpan='2' className='align-middle'>
