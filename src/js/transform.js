@@ -77,7 +77,7 @@ export function RelaxRow({ var_name, row_idx }) {
       } else {
         throw 'Unrecognized relation type';
       }
-      row.coef = splice(row.coef, var_id, 0, Fraction.from_num(val));
+      row.coef[var_id] = Fraction.from_num(val);
       row.rel = '=';
       row.base_id = var_id;
       return table;
@@ -116,7 +116,7 @@ export function SubstituteVariable({ expr, var_id }) {
         if (e.var_name !== null) {
           cnt += 1;
           if (table.is_name_in_use(e.var_name)) {
-            throw `Variable name ${e.var_name} is already used.`
+            throw `Variable name ${e.var_name} is already used.`;
           }
           const e_id = table.id_to_var.length;
           table.var_to_id[e.var_name] = e_id;
@@ -194,9 +194,8 @@ export function SubstituteVariable({ expr, var_id }) {
       return table;
     },
     render(table) {
-      let var_name = table.id_to_var[var_id];
-      if (var_name && table.var_to_id[var_name] === var_id) { // check alive
-        var_name = var_to_math(var_name);
+      if (table.is_id_alive(var_id)) {
+        var_name = var_to_math(table.id_to_var[var_id]);
       } else {
         var_name = '\\text{?}';
       }
