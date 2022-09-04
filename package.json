@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
+    "assert": "^2.0.0",
     "bootstrap": "^5.2.0",
     "katex": "^0.16.2",
     "material-symbols": "^0.2.9",

@@ -1,6 +1,7 @@
 import { splice, clone } from "./utils.js";
 import Fraction from './fraction.js';
 import { Equation, var_to_math } from "./equation.js";
+import assert from 'assert';
 
 function swap_le_ge(x) {
   if (x === '\\le') {
@@ -9,7 +10,7 @@ function swap_le_ge(x) {
   if (x === '\\ge') {
     return '\\le';
   }
-  console.assert(false);
+  assert(false);
 }
 
 export function MultiplyTransform({ up, dn, row_idx }) {
@@ -155,7 +156,7 @@ export function SubstituteVariable({ expr, var_id }) {
             rel: 'any',
           });
         } else {
-          console.assert(cnt === 2);
+          assert(cnt === 2);
           if ((expr[0].up < 0) != (expr[1].up < 0)) {
             throw 'Two variables must have different signs';
           }
@@ -165,7 +166,7 @@ export function SubstituteVariable({ expr, var_id }) {
         if (cnt === 2) {
           throw 'Substituting le / ge constraints with two variables is not supported';
         }
-        console.assert(cnt === 1);
+        assert(cnt === 1);
         let { rel } = constraint;
         let e = null;
         for (const tmp_e of expr) {
@@ -174,7 +175,7 @@ export function SubstituteVariable({ expr, var_id }) {
             break
           }
         }
-        console.assert(e !== null);
+        assert(e !== null);
         const lhs = Fraction.from_frac(e.up, e.dn);
         const rhs = constraint.val.sub(const_term_sum).div(lhs);
         if (lhs.is_neg()) {
@@ -290,8 +291,8 @@ export function Pivot({ row_idx, var_id }) {
       let math = ''
       if (row_idx < table.rows.length) {
         const { base_id } = table.rows[row_idx];
-        console.assert(base_id != -1);
-        console.assert(table.is_id_alive(base_id));
+        assert(base_id != -1);
+        assert(table.is_id_alive(base_id));
         math += var_to_math(table.id_to_var[base_id]);
       } else {
         math += '?';
