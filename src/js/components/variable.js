@@ -1,5 +1,5 @@
-import { InlinePopper } from "../popper.js";
-import { Equation, var_to_math } from "../equation.js";
+import { InlinePopper } from "./popper.js";
+import { Equation, var_to_math } from "./equation.js";
 import { useState } from 'react';
 import Fraction from "../fraction.js";
 

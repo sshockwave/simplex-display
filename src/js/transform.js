@@ -1,6 +1,6 @@
 import { splice, clone } from "./utils.js";
 import Fraction from './fraction.js';
-import { Equation, var_to_math } from "./equation.js";
+import { Equation, var_to_math } from "./components/equation.js";
 import assert from 'assert';
 
 function swap_le_ge(x) {

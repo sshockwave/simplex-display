@@ -1,4 +1,4 @@
-import { Equation, var_to_math } from "../equation";
+import { Equation, var_to_math } from "./equation";
 import { useState } from 'react';
 
 export function SimplexTable({ table, hl, onTransform }) {
