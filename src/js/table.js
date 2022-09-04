@@ -86,17 +86,20 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
     }
     return true;
   }
-  return <InlinePopper content={() => <div className='pt-2 pb-1 ps-2 d-flex flex-row'>
+  return <InlinePopper content={(dismiss) => <div className='pt-2 pb-1 ps-2 d-flex flex-row'>
     <div className='me-2'>
       <button
         type='button'
         className='btn btn-outline-success'
-        onClick={() => onTransform({
-          type: 'insert',
-          action: 'MultiplyTransform',
-          up: -1, dn: 1,
-          row_idx,
-        })}>
+        onClick={() => {
+          dismiss();
+          onTransform({
+            type: 'insert',
+            action: 'MultiplyTransform',
+            up: -1, dn: 1,
+            row_idx,
+          });
+        }}>
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
@@ -107,6 +110,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
         val = a_good_name;
       }
       if (is_good_name(val)) {
+        dismiss();
         onTransform({
           type: 'insert',
           action: 'RelaxRow',

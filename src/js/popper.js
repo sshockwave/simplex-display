@@ -40,7 +40,7 @@ export function InlinePopper({ content, children }) {
     {showActions ? <div className={`popover bs-popover-auto shadow`} ref={content_el}>
       <div className='popover-arrow' ref={arrow_el}/>
       <div className='popover-inner'>
-        {content()}
+        {content(() => setShowActions(false))}
       </div>
     </div> : null}
   </span>

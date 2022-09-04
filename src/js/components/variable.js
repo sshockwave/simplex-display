@@ -45,12 +45,13 @@ export function ModifiableTerm({ coef, var_to_id, var_name, var_id, is_first, ro
   coef = coef.to_coef_katex(is_first);
   const [sub_is_valid, set_sub_is_valid] = useState(false);
   const [parsed, set_parsed] = useState([]);
-  return <InlinePopper content={() => <div className='pt-2 pb-2 ps-2 d-flex flex-row'>
+  return <InlinePopper content={(dismiss) => <div className='pt-2 pb-2 ps-2 d-flex flex-row'>
     <form className={'has-validation me-2 input-group'} onSubmit={e => {
       e.preventDefault();
       if (!sub_is_valid) {
         return;
       }
+      dismiss();
       onTransform({
         type: 'insert',
         action: 'SubstituteVariable',
