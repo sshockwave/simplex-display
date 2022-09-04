@@ -218,7 +218,7 @@ export default function App() {
       <div className='card-header d-flex flex-row'>
         <div>Input</div>
         <div className='ms-auto form-check'>
-          <input className='form-check-input' type='checkbox' value={true} id={id} checked />
+          <input className='form-check-input' type='checkbox' value={true} id={id} checked disabled />
           <label className='form-check-label' htmlFor={id}>
             Locked
           </label>
