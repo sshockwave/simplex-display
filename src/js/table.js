@@ -131,7 +131,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
       <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
     </form>
   </div>}>
-    <span class='is-text-link'>
+    <span className='is-text-link'>
       <Equation>{rel}</Equation>
     </span>
   </InlinePopper>;
@@ -192,7 +192,7 @@ function TargetRow({ id_to_var, var_list, coef, p0, var_to_id, onTransform }) {
     })}
     <td></td>
     <td>{p0.is_zero() ? null :
-      <Equation>{p0.to_katex()}</Equation>
+      <Equation>{p0.to_katex(false)}</Equation>
     }</td>
   </>
 }
@@ -264,7 +264,7 @@ export function InequalitySystem({ table, onTransform }) {
 
 export function TableDisplay({ table, onTransform }) {
   if (table.display_table) {
-    return <SimplexTable table={table} />;
+    return <SimplexTable table={table} onTransform={onTransform}/>;
   } else {
     return <InequalitySystem table={table} onTransform={onTransform}></InequalitySystem>;
   }

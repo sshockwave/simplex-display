@@ -1,7 +1,7 @@
 import { Equation, var_to_math } from "../equation";
 import { useState } from 'react';
 
-export function SimplexTable({ table, hl }) {
+export function SimplexTable({ table, hl, onTransform }) {
   const var_list = Array.from(Object.values(table.var_to_id));
   const nvars = var_list.length;
   const nrows = table.rows.length;
@@ -59,12 +59,18 @@ export function SimplexTable({ table, hl }) {
         <td onMouseOver={f_col(0)}>
           <Equation>{row.p0.to_katex()}</Equation>
         </td>
-        {var_list.map((var_id, idx) => {
+        {var_list.map((var_id, idx2) => {
           const v = row.coef[var_id];
           return <td
-            className={idx === c_col ? 'active' : ''}
-            key={idx}
-            onMouseOver={f_col(idx)}
+            className={`${idx2 === c_col ? 'active' : ''} is-clickable`}
+            key={idx2}
+            onMouseOver={f_col(idx2)}
+            onClick={() => onTransform({
+              type: 'insert',
+              action: 'Pivot',
+              row_idx: idx,
+              var_id,
+            })}
           >
             {v.is_zero() ? null : <Equation>{v.to_katex()}</Equation>}
           </td>;

@@ -38,6 +38,9 @@ export function MultiplyTransform({ up, dn, row_idx }) {
 }
 
 function add_var(table, var_name) {
+  if (table.is_name_in_use(var_name)) {
+    throw `Name ${var_name} is already in use`;
+  }
   const var_id = table.id_to_var.length;
   table.var_to_id = clone(table.var_to_id);
   table.var_to_id[var_name] = var_id;
@@ -232,4 +235,75 @@ export function DisplayInTable() {
       return 'Show Table';
     },
   }
+}
+
+export function Pivot({ row_idx, var_id }) {
+  return {
+    run(table) {
+      table = table.shallow_clone();
+      if (row_idx >= table.rows.length) {
+        throw 'Not enough rows';
+      }
+      const row_before = table.rows[row_idx];
+      if (!table.is_id_alive(var_id)) {
+        throw 'Cannot find variable';
+      }
+      if (row_before.base_id === var_id) {
+        throw 'The target variable is already a base.';
+      }
+      const dn = row_before.coef[var_id];
+      if (!dn.is_pos()) {
+        throw 'This position is unbounded';
+      }
+      const beta = row_before.p0.div(dn);
+      table.rows = table.rows.map((row, cur_idx) => {
+        if (row.coef[var_id].is_pos()) {
+          if ((row.p0.div(row.coef[var_id]).sub(beta)).is_neg()) {
+            throw 'The beta of this base is not minimal.';
+          }
+        }
+        if (cur_idx === row_idx) {
+          const coef = row.coef[var_id];
+          return {
+            coef: row.coef.map((v) => v.div(coef)),
+            rel: row.rel,
+            p0: row.p0.div(coef),
+            base_id: var_id,
+          };
+        } else {
+          row = clone(row);
+          const coef = row.coef[var_id].div(row_before.coef[var_id]);
+          row.coef = row.coef.map((v, idx) => (
+            v.sub(row_before.coef[idx].mul(coef))
+          ));
+          row.p0 = row.p0.sub(row_before.p0.mul(coef));
+          return row;
+        }
+      });
+      const coef = table.target_coef[var_id].div(row_before.coef[var_id]);
+      table.target_coef = table.target_coef.map((v, idx) => (
+        v.sub(row_before.coef[idx].mul(coef))
+      ));
+      table.target_p0 = table.target_p0.add(row_before.p0.mul(coef));
+      return table;
+    },
+    render(table) {
+      let math = ''
+      if (row_idx < table.rows.length) {
+        const { base_id } = table.rows[row_idx];
+        console.assert(base_id != -1);
+        console.assert(table.is_id_alive(base_id));
+        math += var_to_math(table.id_to_var[base_id]);
+      } else {
+        math += '?';
+      }
+      math += '\\to '
+      if (table.is_id_alive(var_id)) {
+        math += var_to_math(table.id_to_var[var_id]);
+      } else {
+        math += '?';
+      }
+      return <span>{'Pivot '}<Equation>{math}</Equation></span>;
+    },
+  };
 }
