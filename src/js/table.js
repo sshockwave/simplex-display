@@ -66,8 +66,8 @@ export class Table {
 
 export function TableDisplay({ table, onTransform }) {
   if (table.display_table) {
-    return <SimplexTable table={table} onTransform={onTransform}/>;
+    return <SimplexTable table={table} onTransform={onTransform} />;
   } else {
-    return <InequalitySystem table={table} onTransform={onTransform}></InequalitySystem>;
+    return <InequalitySystem table={table} onTransform={onTransform} />;
   }
 }

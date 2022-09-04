@@ -133,7 +133,7 @@ export default function App() {
     let error_info = null;
     try {
       transformer = Transform[t.action](t);
-    } catch(e) {
+    } catch (e) {
       error_info = e;
       transformer = {
         render() {
@@ -197,15 +197,17 @@ export default function App() {
                 }}
                 main='text-secondary'
                 alt='text-success'
-              >unfold_less</ClickableIcon></span> : null}
+              >
+                {'unfold_less'}
+              </ClickableIcon></span> : null}
             </div>
           </div>
-        <div className='card-body'>
-          <TableDisplay
-            table={cur}
-            onTransform={(e) => onTransform(e, trans_idx)}
-          ></TableDisplay>
-        </div>
+          <div className='card-body'>
+            <TableDisplay
+              table={cur}
+              onTransform={(e) => onTransform(e, trans_idx)}
+            />
+          </div>
         </div>
       </div>);
       stash = [];
@@ -228,7 +230,7 @@ export default function App() {
         <TableDisplay
           table={tables[0]}
           onTransform={(e) => onTransform(e, -1)}
-        ></TableDisplay>
+        />
       </div>
     </div>
     {display_tables}
