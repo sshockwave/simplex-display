@@ -157,7 +157,7 @@ export function SubstituteVariable({ expr, var_id }) {
           });
         } else {
           assert(cnt === 2);
-          if ((expr[0].up < 0) != (expr[1].up < 0)) {
+          if ((expr[0].up < 0) == (expr[1].up < 0)) {
             throw 'Two variables must have different signs';
           }
           // No constraint on variables
