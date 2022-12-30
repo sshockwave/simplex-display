@@ -13,6 +13,15 @@ function swap_le_ge(x) {
   assert(false);
 }
 
+export function can_run(table, trans, data) {
+  try {
+    trans(data).run(table);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function MultiplyTransform({ up, dn, row_idx }) {
   const factor = Fraction.from_frac(up, dn);
   return {

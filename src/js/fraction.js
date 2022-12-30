@@ -7,6 +7,7 @@ function gcd(a, b) {
 export default class Fraction {
   constructor(a, b) {
     this.up = a, this.dn = b;
+    this.higher = null;
   }
   static zero = new Fraction(0, 1);
   static from_frac(a, b) {
@@ -32,16 +33,16 @@ export default class Fraction {
         is_neg = true;
       }
       let up = 0, dn = 1;
-      let first = true;
-      while (n > eps) {
-        const cur = Math.floor(n);
-        up = up * 10 + cur;
+      for (let first = true; (n * dn - up) > eps * dn;) {
         if (first) {
           first = false;
         } else {
-          dn *= 10;
+          up *= 10, dn *= 10;
         }
-        n = (n - cur) * 10;
+        up += Math.floor(n * dn - up);
+      }
+      if (is_neg) {
+        up = -up;
       }
       return this.from_frac(up, dn);
     }
@@ -62,23 +63,53 @@ export default class Fraction {
     throw "Unrecognized number";
   }
   eq(that) {
-    return this.up === that.up && this.dn === that.dn;
+    if (!(this.higher === null && that.higher === null)) {
+      return false;
+    }
+    if (this.higher === null && that.higher === null) {
+      return true;
+    }
+    if (this.higher === null || that.higher === null) {
+      return false;
+    }
+    return this.higher.eq(that.higher);
   }
   is_pos() {
+    if (this.higher !== null) {
+      return this.higher.is_pos();
+    }
     return this.up > 0;
   }
   is_neg() {
+    if (this.higher !== null) {
+      return this.higher.is_neg();
+    }
     return this.up < 0;
   }
   is_zero() {
-    return this.up === 0;
+    return this.higher === null && this.up === 0;
   }
   neg() {
-    return this.constructor.from_frac(-this.up, this.dn);
+    let t = this.constructor.from_frac(-this.up, this.dn);
+    if (this.higher !== null) {
+      t.higher = this.higher.neg();
+    }
+    return t;
   }
   add(that) {
     const d = gcd(this.dn, that.dn);
-    return this.constructor.from_frac(this.up * (that.dn / d) + that.up * (this.dn / d), this.dn / d * that.dn);
+    let lower = this.constructor.from_frac(this.up * (that.dn / d) + that.up * (this.dn / d), this.dn / d * that.dn);
+    let higher = this.constructor.from_frac(0, 1);
+    if (this.higher !== null) {
+      higher = higher.add(this.higher);
+    }
+    if (that.higher !== null) {
+      higher = higher.add(that.higher);
+    }
+    if (!higher.is_zero()) {
+      lower.higher = higher;
+    }
+    return lower;
   }
   sub(that) {
     return this.add(that.neg());
@@ -86,7 +117,18 @@ export default class Fraction {
   mul(that) {
     const d1 = Math.abs(gcd(this.up, that.dn));
     const d2 = Math.abs(gcd(that.up, this.dn));
-    return new this.constructor((this.up / d1) * (that.up / d2), (this.dn / d2) * (that.dn / d1));
+    let lower = new this.constructor((this.up / d1) * (that.up / d2), (this.dn / d2) * (that.dn / d1));
+    let higher = this.constructor.from_frac(0, 1);
+    if (this.higher !== null) {
+      higher = higher.add(this.higher.mul(that));
+    }
+    if (that.higher !== null) {
+      higher = higher.add(that.higher.mul(new this.constructor(this.up, this.dn)));
+    }
+    if (!higher.is_zero()) {
+      lower.higher = higher;
+    }
+    return lower;
   }
   div(that) {
     const d1 = gcd(this.up, that.up);
@@ -96,23 +138,38 @@ export default class Fraction {
     if (b < 0) {
       a = -a, b = -b;
     }
-    return new this.constructor(a, b);
+    if (that.higher !== null) {
+      throw "Donominator cannot have higher order";
+    }
+    let lower = new this.constructor(a, b);
+    if (this.higher !== null) {
+      lower.higher = this.higher.div(that);
+    }
+    return lower;
   }
-  to_katex(is_first=true) {
+  to_katex(is_first = true) {
+    let ans = '';
+    if (this.higher !== null) {
+      ans += this.higher.to_coef_katex(is_first) + 'M';
+      is_first = false;
+    }
     const sign = this.up < 0 ? '-' : is_first ? '' : '+';
     const a = Math.abs(this.up);
     if (this.dn === 1) {
-      return `${sign}${a}`;
+      ans += `${sign}${a}`;
+    } else {
+      ans += `{${sign}\\frac{${a}}{${this.dn}}}`;
     }
-    return `{${sign}\\frac{${a}}{${this.dn}}}`;
+    return ans;
   }
   to_coef_katex(is_first) {
-    let sign = '+';
-    if (this.is_neg()) {
-      sign = '-';
+    let sign = this.is_neg() ? '-' : is_first ? '' : '+';
+    if (this.up != 0 && this.higher !== null) {
+      let lower = new this.constructor(this.up, this.dn);
+      return `{${sign}(${this.higher.to_coef_katex(true)}M${lower.to_katex(false)})}`;
     }
-    if (sign === '+' && is_first) {
-      sign = '';
+    if (this.higher !== null) {
+      return `{${this.higher.to_coef_katex(is_first)}M}`;
     }
     let a = Math.abs(this.up);
     if (this.dn === 1) {

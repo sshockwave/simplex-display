@@ -40,7 +40,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
-    <form className='has-validation me-2 input-group' onSubmit={(ev) => {
+    {rel == '\\le' || rel == '=' ? <form className='has-validation me-2 input-group' onSubmit={(ev) => {
       ev.preventDefault();
       let val = cur_name;
       if (is_good_name(val)) {
@@ -72,7 +72,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
         className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
       >Relax</button>
       <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
-    </form>
+    </form> : null}
   </div>}>
     <span className='is-text-link'>
       <Equation>{rel}</Equation>
