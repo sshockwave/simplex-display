@@ -10,6 +10,8 @@ export default class Fraction {
     this.higher = null;
   }
   static zero = new Fraction(0, 1);
+  static one = new Fraction(1, 1);
+  static big_m = new Fraction(0, 1);
   static from_frac(a, b) {
     if (b === 0) {
       throw 'Denominator cannot be zero';
@@ -181,3 +183,5 @@ export default class Fraction {
     return `{${sign}\\frac{${a}}{${this.dn}}}`;
   }
 }
+
+Fraction.big_m.higher = Fraction.one;

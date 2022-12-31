@@ -73,13 +73,10 @@ export function RelaxRow({ var_name, row_idx }) {
       let val = 1;
       if (row.rel === '=') {
         if (row.p0.is_neg()) {
-          val = -1;
+          throw 'Equalities cannot be relaxed with negative values';
         }
       } else if (row.rel === '\\ge') {
-        if (row.p0.is_pos()) {
-          throw 'Greater than relations cannot be relaxed with positive values';
-        }
-        val = -1;
+        throw 'Greater than relations cannot be relaxed';
       } else if (row.rel === '\\le') {
         if (row.p0.is_neg()) {
           throw 'Less than relations cannot be relaxed with negative values';
@@ -95,6 +92,38 @@ export function RelaxRow({ var_name, row_idx }) {
     render() {
       return <>
         {'Relax '}
+        <Equation>{`(${row_idx + 1})`}</Equation>
+        {' with '}
+        <Equation>{var_to_math(var_name)}</Equation>
+      </>;
+    },
+  };
+}
+
+export function ArtificialVar({ var_name, row_idx }) {
+  return {
+    run(table) {
+      table = table.shallow_clone();
+      const var_id = add_var(table, var_name);
+      const row = table.rows[row_idx];
+      if (row.rel === '\\ge') {
+        throw 'Greater than relations cannot add artificial variables';
+      } else if (row.rel === '\\le' || row.rel === '=') {
+        if (row.p0.is_pos()) {
+          throw 'Positive values cannot be added with artificial variables';
+        }
+      } else {
+        throw 'Unrecognized relation type';
+      }
+      row.coef[var_id] = Fraction.from_num(-1);
+      table.target_coef[var_id] = Fraction.big_m;
+      row.rel = '=';
+      row.base_id = var_id;
+      return table;
+    },
+    render() {
+      return <>
+        {'AVar '}
         <Equation>{`(${row_idx + 1})`}</Equation>
         {' with '}
         <Equation>{var_to_math(var_name)}</Equation>

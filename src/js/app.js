@@ -13,7 +13,7 @@ function gen_displayable_table() {
     {
       coef: [Fraction.from_num(-2), Fraction.from_num(1), Fraction.from_num(-3)],
       rel: '\\le',
-      p0: Fraction.from_num(-4),
+      p0: Fraction.from_num(-5),
       base_id: -1,
     },
     {
