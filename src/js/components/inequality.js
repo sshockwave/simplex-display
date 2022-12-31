@@ -3,7 +3,7 @@ import { InlinePopper } from "./popper.js";
 import { useState } from "react";
 import { ModifiableTerm } from "./variable.js";
 
-function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
+function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }) {
   const [relax_is_valid, set_relax_is_valid] = useState(true);
   function find_good_name() {
     for (let i = 1; ; i++) {
@@ -23,7 +23,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
     }
     return true;
   }
-  return <InlinePopper content={(dismiss) => <div className='pt-2 pb-1 ps-2 d-flex flex-row'>
+  return <InlinePopper content={(dismiss) => <div className='pt-2 pb-2 ps-2 d-flex flex-row'>
     <div className='me-2'>
       <button
         type='button'
@@ -40,40 +40,57 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id }) {
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
-    {rel == '\\le' || rel == '=' ? <form className='has-validation me-2 input-group' onSubmit={(ev) => {
-      ev.preventDefault();
-      let val = cur_name;
-      if (is_good_name(val)) {
-        dismiss();
-        onTransform({
-          type: 'insert',
-          action: 'RelaxRow',
-          var_name: val,
-          row_idx,
-        });
-      }
-    }}>
-      <input
-        type='text'
-        className={`form-control is-${relax_is_valid ? 'valid' : 'invalid'}`}
-        placeholder={a_good_name}
-        onInput={(ev) => {
-          const val = ev.target.value;
-          set_relax_is_valid(!val || is_good_name(val));
-          if (val) {
-            set_cur_name(val);
-          } else {
-            set_cur_name(a_good_name);
-          }
-        }}
-      />
-      <button
-        type='submit'
-        className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
-      >Relax</button>
-      <div className={`${relax_is_valid ? 'valid' : 'invalid'}-feedback`}></div>
-    </form> : null}
-  </div>}>
+    {show_relax && (rel == '\\le' || rel == '=') ?
+      <div className='input-group me-2'>
+        <input
+          type='text'
+          className={`form-control is-${relax_is_valid ? 'valid' : 'invalid'}`}
+          placeholder={a_good_name}
+          onInput={(ev) => {
+            const val = ev.target.value;
+            set_relax_is_valid(!val || is_good_name(val));
+            if (val) {
+              set_cur_name(val);
+            } else {
+              set_cur_name(a_good_name);
+            }
+          }}
+        />
+        {!p0.is_neg() ? <button
+          type='button'
+          className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
+          onClick={() => {
+            let val = cur_name;
+            if (is_good_name(val)) {
+              dismiss();
+              onTransform({
+                type: 'insert',
+                action: 'RelaxRow',
+                var_name: val,
+                row_idx,
+              });
+            }
+          }}
+        >Relax</button> : null}
+        {!p0.is_pos() ? <button
+          type='button'
+          className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
+          onClick={() => {
+            let val = cur_name;
+            if (is_good_name(val)) {
+              dismiss();
+              onTransform({
+                type: 'insert',
+                action: 'ArtificialVar',
+                var_name: val,
+                row_idx,
+              });
+            }
+          }}
+        >AVar</button> : null}
+      </div>
+      : null}
+  </div >}>
     <span className='is-text-link'>
       <Equation>{rel}</Equation>
     </span>
@@ -107,7 +124,9 @@ function InequalityRow({
       rel={rel}
       row_idx={row_idx}
       onTransform={onTransform}
+      p0={p0}
       var_to_id={var_to_id}
+      show_relax={true}
     ></InequalitySign></td>
     <td><Equation>{p0.to_katex()}</Equation></td>
   </>;
