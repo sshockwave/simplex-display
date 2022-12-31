@@ -233,6 +233,7 @@ export function SubstituteVariable({ expr, var_id }) {
       return table;
     },
     render(table) {
+      let var_name;
       if (table.is_id_alive(var_id)) {
         var_name = var_to_math(table.id_to_var[var_id]);
       } else {
