@@ -91,6 +91,15 @@ export default class Fraction {
   is_zero() {
     return this.higher === null && this.up === 0;
   }
+  sgn() {
+    if (this.is_pos()) {
+      return 1;
+    }
+    if (this.is_neg()) {
+      return -1;
+    }
+    return 0;
+  }
   neg() {
     let t = this.constructor.from_frac(-this.up, this.dn);
     if (this.higher !== null) {
@@ -154,6 +163,9 @@ export default class Fraction {
     if (this.higher !== null) {
       ans += this.higher.to_coef_katex(is_first) + 'M';
       is_first = false;
+      if (this.up === 0) {
+        return ans;
+      }
     }
     const sign = this.up < 0 ? '-' : is_first ? '' : '+';
     const a = Math.abs(this.up);
