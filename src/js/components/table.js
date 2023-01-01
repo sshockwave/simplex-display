@@ -80,14 +80,10 @@ export function SimplexTable({ table, hl, onTransform }) {
             return '\\text{---}';
           }
           const v = row.coef[var_list[c_col]];
-          if (v.is_zero()) {
+          if (!row.p0.is_pos_div(v)) {
             return '\\infty';
           }
-          const v2 = row.p0.div(v);
-          if (v2.is_neg()) {
-            return '\\infty';
-          }
-          return v2.to_katex();
+          return row.p0.div(v).to_katex();
         })()}</Equation></td>
       </tr>)}
       <tr onMouseOver={f_row(nrows - 1)}>
