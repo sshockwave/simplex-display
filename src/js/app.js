@@ -1,9 +1,9 @@
 import { useState, useId } from 'react';
 import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
-import { clone } from './utils.js';
+import { clone, useStateParams } from './utils.js';
 import * as Transform from './transform.js';
-import { HoverIcon } from './components/icon.js';
+import { HoverIcon, ClickableIcon, ErrorIcon } from './components/icon.js';
 
 function gen_displayable_table() {
   let table = new Table;
@@ -68,7 +68,12 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
 
 export default function App() {
   const [initialTable, setInitialTable] = useState(gen_displayable_table);
-  const [transforms, setTransforms] = useState([]);
+  const [transforms, setTransforms] = useStateParams(
+    [],
+    'transforms',
+    (t) => JSON.stringify(t),
+    (t) => JSON.parse(t),
+  );
 
   function onTransform(e, idx) {
     const { type } = e;
