@@ -39,7 +39,7 @@ export function MultiplyTransform({ up, dn, row_idx }) {
         coef: row.coef.map(x => x.neg()),
         rel,
         p0: row.p0.neg(),
-        base_id: -1,
+        base_id: row.base_id,
       });
       return table;
     },
