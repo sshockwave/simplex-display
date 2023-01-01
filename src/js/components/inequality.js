@@ -14,9 +14,6 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
   }
   const a_good_name = find_good_name();
   const [cur_name, set_cur_name] = useState(a_good_name);
-  useEffect(() => {
-    set_cur_name(a_good_name);
-  });
   function is_good_name(s) {
     if (!s.match(/^[a-zA-Z]+\d*'*$/)) {
       return false;
@@ -62,7 +59,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
         type='button'
         className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
         onClick={() => {
-          let val = cur_name;
+          let val = cur_name || find_good_name();
           if (is_good_name(val)) {
             dismiss();
             onTransform({
@@ -71,6 +68,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
               var_name: val,
               row_idx,
             });
+            set_cur_name(null);
           }
         }}
       >Relax</button> : null}
@@ -78,7 +76,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
         type='button'
         className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
         onClick={() => {
-          let val = cur_name;
+          let val = cur_name || find_good_name();
           if (is_good_name(val)) {
             dismiss();
             onTransform({
@@ -87,6 +85,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
               var_name: val,
               row_idx,
             });
+            set_cur_name(null);
           }
         }}
       >AVar</button> : null}

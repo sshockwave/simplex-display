@@ -10,6 +10,9 @@ function swap_le_ge(x) {
   if (x === '\\ge') {
     return '\\le';
   }
+  if (x === '=') {
+    return '=';
+  }
   assert(false);
 }
 
