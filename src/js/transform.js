@@ -267,6 +267,19 @@ export function DisplayInTable() {
       }
       table = table.shallow_clone();
       table.original_target_coef = table.target_coef;
+      table.target_coef = table.target_coef.slice()
+      for (let r of table.rows) {
+        if (r.base_id !== -1 && !table.target_coef[r.base_id].is_zero()) {
+          let tr_coef = table.target_coef[r.base_id].div(r.coef[r.base_id]);
+          for (let i = 0; i < table.target_coef.length; i++) {
+            table.target_coef[i] = table.target_coef[i].sub(r.coef[i].mul(tr_coef));
+          }
+          table.target_p0 = table.target_p0.add(r.p0.mul(tr_coef));
+          if (!table.target_coef[r.base_id].is_zero()) {
+            throw "Assertion error: coef should have been cleared.";
+          }
+        }
+      }
       table.display_table = true;
       return table;
     },
