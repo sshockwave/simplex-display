@@ -70,23 +70,14 @@ export function RelaxRow({ var_name, row_idx }) {
       table = table.shallow_clone();
       const var_id = add_var(table, var_name);
       const row = table.rows[row_idx];
-      let val = 1;
-      if (row.rel === '=') {
-        if (row.p0.is_neg()) {
-          throw 'Equalities cannot be relaxed with negative values';
-        }
-      } else if (row.rel === '\\ge') {
-        throw 'Greater than relations cannot be relaxed';
-      } else if (row.rel === '\\le') {
-        if (row.p0.is_neg()) {
-          throw 'Less than relations cannot be relaxed with negative values';
-        }
-      } else {
-        throw 'Unrecognized relation type';
+      if (row.rel !== '\\le') {
+        throw 'Only less than relations can be relaxed';
       }
-      row.coef[var_id] = Fraction.from_num(val);
+      row.coef[var_id] = Fraction.one;
       row.rel = '=';
-      row.base_id = var_id;
+      if (!row.p0.is_neg()) {
+        row.base_id = var_id;
+      }
       return table;
     },
     render() {
@@ -106,18 +97,14 @@ export function ArtificialVar({ var_name, row_idx }) {
       table = table.shallow_clone();
       const var_id = add_var(table, var_name);
       const row = table.rows[row_idx];
-      if (row.rel === '\\ge') {
-        throw 'Greater than relations cannot add artificial variables';
-      } else if (row.rel === '\\le' || row.rel === '=') {
-        if (row.p0.is_pos()) {
-          throw 'Positive values cannot be added with artificial variables';
-        }
-      } else {
-        throw 'Unrecognized relation type';
+      if (row.rel !== '=') {
+        throw 'Only equations can add artificial variables';
       }
-      row.coef[var_id] = Fraction.from_num(-1);
+      row.coef[var_id] = Fraction.one;
+      if (row.p0.is_neg()) {
+        row.coef[var_id] = row.coef[var_id].neg();
+      }
       table.target_coef[var_id] = Fraction.big_m;
-      row.rel = '=';
       row.base_id = var_id;
       return table;
     },

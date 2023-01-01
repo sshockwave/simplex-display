@@ -1,9 +1,9 @@
 import { Equation, var_to_math } from "./equation.js";
 import { InlinePopper } from "./popper.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ModifiableTerm } from "./variable.js";
 
-function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }) {
+function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
   const [relax_is_valid, set_relax_is_valid] = useState(true);
   function find_good_name() {
     for (let i = 1; ; i++) {
@@ -14,6 +14,9 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }
   }
   const a_good_name = find_good_name();
   const [cur_name, set_cur_name] = useState(a_good_name);
+  useEffect(() => {
+    set_cur_name(a_good_name);
+  });
   function is_good_name(s) {
     if (!s.match(/^[a-zA-Z]+\d*'*$/)) {
       return false;
@@ -40,7 +43,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }
         <Equation>{'\\times(-1)'}</Equation>
       </button>
     </div>
-    {show_relax && (rel == '\\le' || rel == '=') ? <div className='input-group me-2'>
+    {show_relax && rel !== '\\ge' ? <div className='input-group me-2'>
       <input
         type='text'
         className={`form-control is-${relax_is_valid ? 'valid' : 'invalid'}`}
@@ -55,7 +58,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }
           }
         }}
       />
-      {!p0.is_neg() ? <button
+      {rel === '\\le' ? <button
         type='button'
         className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
         onClick={() => {
@@ -71,7 +74,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, p0, show_relax }
           }
         }}
       >Relax</button> : null}
-      {!p0.is_pos() ? <button
+      {rel === '=' ? <button
         type='button'
         className={`btn ${relax_is_valid ? 'btn-success' : 'disabled btn-danger'}`}
         onClick={() => {
