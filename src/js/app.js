@@ -3,7 +3,7 @@ import Fraction from './fraction.js';
 import { Table, TableDisplay } from './table.js';
 import { clone } from './utils.js';
 import * as Transform from './transform.js';
-import { ClickableIcon, ErrorIcon } from './components/icon.js';
+import { HoverIcon } from './components/icon.js';
 
 function gen_displayable_table() {
   let table = new Table;
@@ -190,7 +190,7 @@ export default function App() {
     tables.push(cur);
   }
   const id = useId();
-  return <div className='container pt-3'>
+  return <div className='d-flex flex-column min-vh-100'><div className='container pt-3 flex-grow-1'>
     <div className='card mb-3 shadow-sm'>
       <div className='card-header d-flex flex-row'>
         <div>Input</div>
@@ -209,5 +209,26 @@ export default function App() {
       </div>
     </div>
     {display_tables}
+  </div>
+    <div className='border-top pt-3'>
+      <footer className='container d-flex flex-wrap justify-content-between align-items-center mb-3'>
+        <div className='col-md-4 d-flex align-items-center'>
+          Simplex Display
+        </div>
+        <ul className='nav col-md-4 justify-content-end list-unstyled d-flex'>
+          <li>
+            <a
+              className='text-decoration-none'
+              href='https://github.com/sshockwave/simplex-display'
+            >
+              <HoverIcon
+                main={'text-secondary'}
+                alt={'text-primary'}
+              >code</HoverIcon>
+            </a>
+          </li>
+        </ul>
+      </footer>
+    </div>
   </div>;
 }
