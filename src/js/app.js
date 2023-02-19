@@ -11,29 +11,28 @@ function gen_displayable_table() {
   table.id_to_var = ['x1', 'x2', 'x3'];
   table.rows = [
     {
-      coef: [Fraction.from_num(-2), Fraction.from_num(1), Fraction.from_num(-3)],
-      rel: '\\le',
-      p0: Fraction.from_num(-5),
+      coef: [Fraction.from_num(-2), Fraction.from_num(1), Fraction.from_num(1)],
+      rel: '\\ge',
+      p0: Fraction.from_num(6),
       base_id: -1,
     },
     {
-      coef: [Fraction.from_num(1), Fraction.from_num(-2), Fraction.from_num(4)],
+      coef: [Fraction.from_num(3), Fraction.from_num(-2), Fraction.from_num(-1)],
+      rel: '\\le',
+      p0: Fraction.from_num(5),
+      base_id: -1,
+    },
+    {
+      coef: [Fraction.from_num(1), Fraction.from_num(2), Fraction.from_num(-2)],
       rel: '\\ge',
       p0: Fraction.from_num(-6),
       base_id: -1,
     },
-    {
-      coef: [Fraction.from_num(2), Fraction.from_num(1), Fraction.from_num(-2)],
-      rel: '\\ge',
-      p0: Fraction.from_num(2),
-      base_id: -1,
-    },
   ];
-  table.target_coef = [Fraction.from_num(3), Fraction.from_num(1), Fraction.from_num(-2)];
+  table.target_coef = [Fraction.from_num(1), Fraction.from_num(2), Fraction.from_num(-1)];
   table.var_non_std = [
-    { id: 0, rel: '\\ge', val: Fraction.from_num(2) },
     { id: 1, rel: 'any', },
-    { id: 2, rel: '\\le', val: Fraction.from_num(0) },
+    { id: 2, rel: '\\le', val: Fraction.from_num(-1) },
   ];
   table.target_is_max = false;
   return table;
