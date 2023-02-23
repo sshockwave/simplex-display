@@ -17,7 +17,7 @@ function gen_displayable_table() {
       base_id: -1,
     },
     {
-      coef: [Fraction.from_num(3), Fraction.from_num(-2), Fraction.from_num(-1)],
+      coef: [Fraction.from_num(5), Fraction.from_num(-2), Fraction.from_num(-1)],
       rel: '\\le',
       p0: Fraction.from_num(5),
       base_id: -1,
@@ -29,7 +29,7 @@ function gen_displayable_table() {
       base_id: -1,
     },
   ];
-  table.target_coef = [Fraction.from_num(1), Fraction.from_num(2), Fraction.from_num(-1)];
+  table.target_coef = [Fraction.from_num(-5), Fraction.from_num(2), Fraction.from_num(-1)];
   table.var_non_std = [
     { id: 1, rel: 'any', },
     { id: 2, rel: '\\le', val: Fraction.from_num(-1) },
