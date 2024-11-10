@@ -1,42 +1,9 @@
 import { useState, useId } from 'react';
-import Fraction from './fraction.js';
-import { Table, TableDisplay } from './table.js';
+import { TableDisplay } from './table.js';
 import { clone, useStateParams } from './utils.js';
 import * as Transform from './transform.js';
 import { HoverIcon, ClickableIcon, ErrorIcon } from './components/icon.js';
-
-function gen_displayable_table() {
-  let table = new Table;
-  table.var_to_id = { 'x1': 0, 'x2': 1, 'x3': 2 };
-  table.id_to_var = ['x1', 'x2', 'x3'];
-  table.rows = [
-    {
-      coef: [Fraction.from_num(1), Fraction.from_num(-1), Fraction.from_num(1)],
-      rel: '\\ge',
-      p0: Fraction.from_num(-3),
-      base_id: -1,
-    },
-    {
-      coef: [Fraction.from_num(2), Fraction.from_num(1), Fraction.from_num(1)],
-      rel: '\\le',
-      p0: Fraction.from_num(9),
-      base_id: -1,
-    },
-    {
-      coef: [Fraction.from_num(1), Fraction.from_num(3), Fraction.from_num(1)],
-      rel: '\\ge',
-      p0: Fraction.from_num(4),
-      base_id: -1,
-    },
-  ];
-  table.target_coef = [Fraction.from_num(-1), Fraction.from_num(-3), Fraction.from_num(5)];
-  table.var_non_std = [
-    { id: 1, rel: '\\ge', val: Fraction.from_num(1) },
-    { id: 2, rel: 'any', },
-  ];
-  table.target_is_max = false;
-  return table;
-}
+import { example_input, input_to_table } from './input.js';
 
 function TransformBadge({ t_data, children, success, onTransform, error_info }) {
   return <span className='position-relative'>
@@ -66,7 +33,9 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
 }
 
 export default function App() {
-  const [initialTable, setInitialTable] = useState(gen_displayable_table);
+  const [initialTable, setInitialTable] = useState(() => {
+    return input_to_table(example_input);
+  });
   const [transforms, setTransforms] = useStateParams(
     [],
     'transforms',
