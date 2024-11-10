@@ -11,28 +11,28 @@ function gen_displayable_table() {
   table.id_to_var = ['x1', 'x2', 'x3'];
   table.rows = [
     {
-      coef: [Fraction.from_num(-2), Fraction.from_num(1), Fraction.from_num(1)],
+      coef: [Fraction.from_num(1), Fraction.from_num(-1), Fraction.from_num(1)],
       rel: '\\ge',
-      p0: Fraction.from_num(6),
+      p0: Fraction.from_num(-3),
       base_id: -1,
     },
     {
-      coef: [Fraction.from_num(5), Fraction.from_num(-2), Fraction.from_num(-1)],
+      coef: [Fraction.from_num(2), Fraction.from_num(1), Fraction.from_num(1)],
       rel: '\\le',
-      p0: Fraction.from_num(5),
+      p0: Fraction.from_num(9),
       base_id: -1,
     },
     {
-      coef: [Fraction.from_num(1), Fraction.from_num(2), Fraction.from_num(-2)],
+      coef: [Fraction.from_num(1), Fraction.from_num(3), Fraction.from_num(1)],
       rel: '\\ge',
-      p0: Fraction.from_num(-6),
+      p0: Fraction.from_num(4),
       base_id: -1,
     },
   ];
-  table.target_coef = [Fraction.from_num(-5), Fraction.from_num(2), Fraction.from_num(-1)];
+  table.target_coef = [Fraction.from_num(-1), Fraction.from_num(-3), Fraction.from_num(5)];
   table.var_non_std = [
-    { id: 1, rel: 'any', },
-    { id: 2, rel: '\\le', val: Fraction.from_num(-1) },
+    { id: 1, rel: '\\ge', val: Fraction.from_num(1) },
+    { id: 2, rel: 'any', },
   ];
   table.target_is_max = false;
   return table;
