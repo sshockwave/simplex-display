@@ -1,9 +1,12 @@
-import { useState, useId } from 'react';
+import { useState, useId, useEffect, useRef, useMemo } from 'react';
 import { TableDisplay } from './table.js';
 import { clone, useStateParams } from './utils.js';
 import * as Transform from './transform.js';
 import { HoverIcon, ClickableIcon, ErrorIcon } from './components/icon.js';
-import { example_input, input_to_table } from './input.js';
+import { example_input, example_input_text, input_to_table } from './input.js';
+import { EditorView, basicSetup } from "codemirror";
+import { json as json_lang} from "@codemirror/lang-json";
+import { EditorState } from '@codemirror/state';
 
 function TransformBadge({ t_data, children, success, onTransform, error_info }) {
   return <span className='position-relative'>
@@ -32,9 +35,59 @@ function TransformBadge({ t_data, children, success, onTransform, error_info }) 
   </span>;
 }
 
+function InputEditor({ value, on_save }) {
+  const ref = useRef(null);
+  const [editor, setEditor] = useState(null);
+  const [can_apply, set_can_apply] = useState(false);
+  useEffect(() => {
+    if (editor === null) {
+      const state = EditorState.create({
+        doc: value,
+        extensions: [
+          basicSetup, json_lang(),
+          EditorView.updateListener.of(update => {
+            if (update.docChanged) {
+              set_can_apply(true);
+            }
+          }),
+        ],
+      });
+      setEditor(new EditorView({
+        state,
+        parent: ref.current,
+      }));
+      return;
+    }
+    return () => {
+      editor.destroy();
+      setEditor(null);
+    };
+  }, [editor]);
+  return <>
+    <div ref={ref} style={{
+      width: '100%',
+    }} />
+    <button
+      type='button'
+      className='btn mt-3 btn-primary'
+      disabled={!can_apply}
+      onClick={() => {
+        set_can_apply(false);
+        on_save(editor.state.doc.toString());
+      }}
+    >{can_apply ? 'Apply' : 'Up to date'}</button>
+  </>;
+}
+
 export default function App() {
+  const [input_text, set_input_text] = useStateParams(
+    example_input_text,
+    'input',
+    (t) => t,
+    (t) => t,
+  );
   const [initialTable, setInitialTable] = useState(() => {
-    return input_to_table(example_input);
+    return input_to_table(JSON.parse(input_text));
   });
   const [transforms, setTransforms] = useStateParams(
     [],
@@ -162,18 +215,31 @@ export default function App() {
     }
     tables.push(cur);
   }
-  const id = useId();
   return <div className='d-flex flex-column min-vh-100'><div className='container pt-3 flex-grow-1'>
     <div className='card mb-3 shadow-sm'>
       <div className='card-header d-flex flex-row'>
         <div>Input</div>
-        <div className='ms-auto form-check'>
-          <input className='form-check-input' type='checkbox' value={true} id={id} checked disabled />
-          <label className='form-check-label' htmlFor={id}>
-            Locked
-          </label>
-        </div>
       </div>
+      <div className='card-body'>
+        <InputEditor value={input_text} on_save={(val) => {
+          set_input_text(val);
+          try {
+            setInitialTable(input_to_table(JSON.parse(val)));
+          } catch (e) {
+            window.alert(e);
+          }
+        }} />
+        <button
+          type='button'
+          className='btn btn-danger ms-2 mt-3'
+          disabled={transforms.length === 0}
+          onClick={() => {
+            setTransforms([]);
+          }}
+        >Clear Transforms</button>
+      </div>
+    </div>
+    <div className='card mb-3 shadow-sm'>
       <div className='card-body'>
         <TableDisplay
           table={tables[0]}
