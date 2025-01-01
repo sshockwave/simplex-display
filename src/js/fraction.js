@@ -158,15 +158,6 @@ export default class Fraction {
     }
     return lower;
   }
-  is_pos_div(that) {
-    if (that.is_zero()) {
-      return false;
-    }
-    if (this.is_zero()) {
-      return true;
-    }
-    return this.is_pos() === that.is_pos();
-  }
   to_katex(is_first = true) {
     let ans = '';
     if (this.higher !== null) {

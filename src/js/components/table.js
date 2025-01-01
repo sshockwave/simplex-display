@@ -80,7 +80,7 @@ export function SimplexTable({ table, hl, onTransform }) {
             return '\\text{---}';
           }
           const v = row.coef[var_list[c_col]];
-          if (!row.p0.is_pos_div(v)) {
+          if (v.is_pos() !== row.coef[row.base_id].is_pos()) {
             return '\\infty';
           }
           return row.p0.div(v).to_katex();

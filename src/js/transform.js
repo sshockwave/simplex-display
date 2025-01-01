@@ -313,12 +313,12 @@ export function Pivot({ row_idx, var_id }) {
         throw 'The target variable is already a base.';
       }
       const dn = row_before.coef[var_id];
-      if (!row_before.p0.is_pos_div(dn)) {
+      if (dn.is_pos() !== row_before.coef[row_before.base_id].is_pos()) {
         throw 'This position is unbounded';
       }
       const beta = row_before.p0.div(dn);
       table.rows = table.rows.map((row, cur_idx) => {
-        if (row.p0.is_pos_div(row.coef[var_id])) {
+        if (row.coef[var_id].is_pos() === row.coef[row.base_id].is_pos()) {
           let div_result = row.p0.div(row.coef[var_id]);
           if (div_result.sub(beta).is_neg()) {
             throw 'The beta of this base is not minimal.';
