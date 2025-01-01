@@ -91,7 +91,7 @@ function InequalitySign({ rel, row_idx, onTransform, var_to_id, show_relax }) {
         }}
       >AVar</button> : null}
     </div> : null}
-  </div >}>
+  </div>}>
     <span className='is-text-link'>
       <Equation>{rel}</Equation>
     </span>
@@ -160,6 +160,24 @@ function TargetRow({ id_to_var, var_list, coef, p0, var_to_id, onTransform }) {
   </>
 }
 
+export function TargetTypeModifier({ target_is_max, onTransform }) {
+  return <InlinePopper content={(dismiss) => <div className='pt-2 pb-2 ps-2 d-flex flex-row'>
+    <button type='button' className='btn btn-outline-success me-2' onClick={() => {
+      dismiss();
+      onTransform({
+        type: 'insert',
+        action: 'ToggleTargetMinMax',
+      });
+    }}>
+      Toggle
+    </button>
+  </div>}>
+    <span className='is-text-link'>
+      <Equation>{`\\text{${target_is_max ? 'Maximize' : 'Minimize'}}`}</Equation>
+    </span>
+  </InlinePopper>
+}
+
 export function InequalitySystem({ table, onTransform }) {
   let var_list = Object.values(table.var_to_id);
   var_list.sort();
@@ -187,7 +205,7 @@ export function InequalitySystem({ table, onTransform }) {
     <thead>
       <tr className='me-1'>
         <th className='pe-3'>
-          <Equation>{`\\text{${table.target_is_max ? 'Maximize' : 'Minimize'}}`}</Equation>
+          <TargetTypeModifier target_is_max={table.target_is_max} onTransform={onTransform} />
         </th>
         <TargetRow
           id_to_var={table.id_to_var}

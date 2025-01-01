@@ -25,6 +25,21 @@ export function can_run(table, trans, data) {
   }
 }
 
+export function ToggleTargetMinMax() {
+  return {
+    run(table) {
+      table = table.shallow_clone();
+      table.target_is_max = !table.target_is_max;
+      table.target_coef = table.target_coef.map(x => x.neg());
+      table.target_p0 = table.target_p0.neg();
+      return table;
+    },
+    render() {
+      return <>Toggle min / max</>;
+    },
+  }
+}
+
 export function MultiplyTransform({ up, dn, row_idx }) {
   const factor = Fraction.from_frac(up, dn);
   return {
@@ -107,7 +122,11 @@ export function ArtificialVar({ var_name, row_idx }) {
       if (row.p0.is_neg()) {
         row.coef[var_id] = row.coef[var_id].neg();
       }
-      table.target_coef[var_id] = Fraction.big_m;
+      if (table.target_is_max) {
+        table.target_coef[var_id] = Fraction.big_m.neg();
+      } else {
+        table.target_coef[var_id] = Fraction.big_m;
+      }
       row.base_id = var_id;
       return table;
     },
