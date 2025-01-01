@@ -215,6 +215,7 @@ export default function App() {
     }
     tables.push(cur);
   }
+  const last_table = tables[tables.length - 1];
   return <div className='d-flex flex-column min-vh-100'><div className='container pt-3 flex-grow-1'>
     <div className='card mb-3 shadow-sm'>
       <div className='card-header d-flex flex-row'>
@@ -248,6 +249,12 @@ export default function App() {
       </div>
     </div>
     {display_tables}
+    {!last_table.display_table && !last_table.can_display_in_table()
+      ? <div className='alert alert-secondary' role='alert'>
+        {last_table.to_table_fail_reason()}
+      </div>
+      : null
+    }
   </div>
     <div className='border-top pt-3'>
       <footer className='container d-flex flex-wrap justify-content-between align-items-center mb-3'>

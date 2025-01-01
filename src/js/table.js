@@ -2,6 +2,7 @@ import Fraction from "./fraction";
 import { clone } from './utils.js';
 import { SimplexTable } from "./components/table";
 import { InequalitySystem } from "./components/inequality";
+import { Equation, var_to_math } from "./components/equation.js";
 
 export class Table {
   constructor() {
@@ -55,6 +56,23 @@ export class Table {
       }
     }
     return true;
+  }
+  to_table_fail_reason() {
+    if (this.var_non_std.length !== 0) {
+      return <>Variable&nbsp;
+        <Equation>{var_to_math(this.id_to_var[this.var_non_std[0].id])}</Equation>
+        &nbsp;has non-standard constraints.
+      </>;
+    }
+    for (const [i, row] of this.rows.entries()) {
+      if (row.rel !== '=') {
+        return <>Row <Equation>{`(${i + 1})`}</Equation> has a non-equality constraint.</>;
+      }
+      if (row.base_id === -1) {
+        return <>Row <Equation>{`(${i + 1})`}</Equation> has no base variable.</>;
+      }
+    }
+    return <>There are no errors.</>;
   }
   is_id_alive(id) {
     return this.var_to_id[this.id_to_var[id]] === id;
