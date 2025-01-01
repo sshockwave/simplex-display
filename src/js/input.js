@@ -2,16 +2,16 @@ import Fraction from "./fraction";
 import { Table } from "./table";
 
 export const example_input_text = `{
-  "var_list": [ "x1", "x2", "x3" ],
+  "var_list": [ "x1", "y2", "x3'" ],
   "constraints": [
     [ 1, -1, "3/3", ">=", -3 ],
     [ 2, 1, 1, "<=", 9 ],
-    [ 1, 3, 1, ">=", 4 ]
+    [ 1, 3, 1, "=", 4 ]
   ],
   "target_coef": [ -1, -3, 5 ],
   "var_constraints": {
-    "x2": { "rel": ">=", "val": 1 },
-    "x3": { "rel": "any" }
+    "y2": { "rel": ">=", "val": 1 },
+    "x3''": { "rel": "any" }
   },
   "target_is_max": false
 }`;
