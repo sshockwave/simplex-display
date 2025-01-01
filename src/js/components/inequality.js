@@ -229,6 +229,9 @@ export function InequalitySystem({ table, onTransform }) {
             var_to_id={table.var_to_id}
             {...row}
           ></InequalityRow>
+          <td className='ps-5'>
+            <Equation>{`(${idx + 1})`}</Equation>
+          </td>
         </tr>
       ))}
     </tbody>
