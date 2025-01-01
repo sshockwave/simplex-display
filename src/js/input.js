@@ -68,7 +68,7 @@ export function input_to_table(input) {
       rel: get_inequality_sign(rel),
       val: get_frac(val),
     }),
-  }));
+  })).filter(({ rel, val }) => !(rel === '\\ge' && val.is_zero()));
   table.target_is_max = input.target_is_max;
   return table;
 }
