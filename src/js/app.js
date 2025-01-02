@@ -250,7 +250,7 @@ export default function App() {
     </div>
     {display_tables}
     {!last_table.display_table && !last_table.can_display_in_table()
-      ? <div className='alert alert-secondary' role='alert'>
+      ? <div className='alert alert-secondary shadow-sm' role='alert'>
         {last_table.to_table_fail_reason()}
       </div>
       : null

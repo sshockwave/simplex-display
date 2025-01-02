@@ -11,7 +11,7 @@ export const example_input_text = `{
   "target_coef": [ -1, -3, 5 ],
   "var_constraints": {
     "y2": { "rel": ">=", "val": 1 },
-    "x3''": { "rel": "any" }
+    "x3'": { "rel": "any" }
   },
   "target_is_max": false
 }`;
@@ -61,14 +61,14 @@ export function input_to_table(input) {
   });
   table.target_coef = input.target_coef.map(get_frac);
   table.var_non_std = Object.entries(input.var_constraints).map(([name, { rel, val }]) => ({
-    id: table.var_to_id[name],
+    id: table.var_to_id[name] ?? (() => { throw `Invalid variable: ${name}` })(),
     ...(rel === 'any' ? {
-      rel: 'any',
+      rel,
     }: {
       rel: get_inequality_sign(rel),
       val: get_frac(val),
     }),
   })).filter(({ rel, val }) => !(rel === '\\ge' && val.is_zero()));
-  table.target_is_max = input.target_is_max;
+  table.target_is_max = input.target_is_max ? true : false;
   return table;
 }
